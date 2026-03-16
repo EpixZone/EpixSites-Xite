@@ -1,0 +1,23 @@
+{
+	"Invalid site address: only EpixNet addresses supported": "Direcci\u00f3n de pagina web invalida: solo se soportan direcciones de EpixNet",
+	"This field is required": "Este campo es requerido",
+
+	"Popular": "Popular",
+	"New": "Nuevo",
+
+	"Address": "Direcci\u00f3n",
+	"e.g. epix1abc123...": "e.j. epix1abc123...",
+	"Title": "T\u00edtulo",
+	"e.g. Epix Blog": "e.j. Epix Blog",
+	"Language": "Lenguaje",
+	"Category": "Categoria",
+	"Description": "Descripci\u00f3n",
+	"e.g. EpixNet changelog and related information": "e.j. EpixNet notas de cambios e informaciones relacionadas",
+	"Submit": "Enviar",
+
+	"Site languages: ": "Lenguaje de sitio",
+	"User: ": "Usuario: ",
+	"Filter: ": "Filtro: ",
+	"Submit new site": "Enviar nuevo sitio",
+	"Connect xID": "Conectar xID"
+}

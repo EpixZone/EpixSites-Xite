@@ -1,0 +1,162 @@
+{
+ "address": "epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf",
+ "address_index": 17756741,
+ "clone_root": "",
+ "cloned_from": "epix1dashuu6pvsut7aw9dx44f543mv7xt9zlydsj9t",
+ "description": "Discover More Sites",
+ "epixnet_version": "0.0.2",
+ "files": {
+  "LICENSE": {
+   "sha512": "e67014a69caa38c58575f333619243c9ebb3c98d462f0b4823ff5ed3d2cfdba3",
+   "size": 1077
+  },
+  "css/all.css": {
+   "sha512": "50fd075034ede7ff78582a7a4c08bf9a3c2c1462211f5e8e8f084b6e928a1271",
+   "size": 120826
+  },
+  "dbschema.json": {
+   "sha512": "c7cf9bfee254a000d4a6cd38776ca0cc7ba725c09012df85555fcd63a620aab2",
+   "size": 1914
+  },
+  "img/logo.png": {
+   "sha512": "1b9bf2d0fc7917335b698c0f2a3f902a86b5a9a917a945bbaa04bc82f2a8645f",
+   "size": 2383
+  },
+  "index.html": {
+   "sha512": "73abda090142453ce8f4556d1fb2ef06b79ddded109d3e33087ee55a41bf4565",
+   "size": 2029
+  },
+  "js/EpixSites.js": {
+   "sha512": "5d80e4228bbab713de450d69c405d7675c624df3273f2abef7e40e89de5df164",
+   "size": 6374
+  },
+  "js/Head.js": {
+   "sha512": "7ffd3bc69babcb81a04ea9f63c9f050a4f7cf95d5e74647cb4c177a44787bfdc",
+   "size": 989
+  },
+  "js/Site.js": {
+   "sha512": "284e3ff88b166ac0942c9d7b600a5c8a80982303923f827f675fdf88bcd60561",
+   "size": 4913
+  },
+  "js/SiteAdd.js": {
+   "sha512": "f0b1e31613f7af865d78c351f5ba837fe86a710ff4ab2459cf82b285a154a13d",
+   "size": 5187
+  },
+  "js/SiteList.js": {
+   "sha512": "8dfb83cdb98be2e378bb8454d7950a77e3a710f0f5d164ed0c9bc5061e5deb7d",
+   "size": 3088
+  },
+  "js/SiteLists.js": {
+   "sha512": "12bec718886bf87310deafc81a11321c500b02f9dd29937b11072a8b09bd367c",
+   "size": 8104
+  },
+  "js/User.js": {
+   "sha512": "40b58032c535a7315329bf8d26d4e1439c2862dc71aa3fc594fbf7cd707641d4",
+   "size": 2851
+  },
+  "js/lib/anime.min.js": {
+   "sha512": "10669107a89bdf6ce9d2c074e20866a903d77264f3ab87f7f45ea5b8abfb84ee",
+   "size": 9621
+  },
+  "js/lib/epixframe.js": {
+   "sha512": "8cb66604615c662afc621127a3ab534d23323ad4bbfe068d9dae7a62fba73ae9",
+   "size": 18957
+  },
+  "js/lib/maquette.js": {
+   "sha512": "13a5915b13b613f8221b03b3ea0d96fde1b4bf5dbbe5b5b8517998c0f9201c2f",
+   "size": 35669
+  },
+  "js/utils/Animation.js": {
+   "sha512": "f44f63d9a9dbad3a90b75c36415b17a0a686e67c8c8538db3bed504ee4f2470d",
+   "size": 6432
+  },
+  "js/utils/Deferred.js": {
+   "sha512": "eb5e970c86dd0823ddf1cf9ec771a8c80c8e97deb0a7b0da6910515b7d1c2f10",
+   "size": 1044
+  },
+  "js/utils/Dollar.js": {
+   "sha512": "e1e759211746898e0467c1855b071c413a18c94540d8b95cb8113a27c60fbfdf",
+   "size": 168
+  },
+  "js/utils/Form.js": {
+   "sha512": "a0c8f65d96d1a2b8d01c87f807154dedf2f211a72e47d444326c00d05708ff57",
+   "size": 6858
+  },
+  "js/utils/ItemList.js": {
+   "sha512": "6b250d92599ce239a117d7ec550df5acd2448aae1fffc16e3b423373c3e3acff",
+   "size": 958
+  },
+  "js/utils/LogMixin.js": {
+   "sha512": "5d393d9e466748562c1c4c9750d3d013d6e04b887b81998dd9246c841e3fff42",
+   "size": 607
+  },
+  "js/utils/Menu.js": {
+   "sha512": "2bb9a064e580df1d117a831b449566d54a57039a32110752de4c7a973fa87077",
+   "size": 3402
+  },
+  "js/utils/Prototypes.js": {
+   "sha512": "43838ea7bedcbe3b4fa080a8e65bbd5c8ee81c1a590b52f8ec34c58538812ddc",
+   "size": 491
+  },
+  "js/utils/RateLimit.js": {
+   "sha512": "e7e3e547e6e733b284aaaf10835ac982659e91e67b146e5cf9ccc485c142852f",
+   "size": 528
+  },
+  "js/utils/Text.js": {
+   "sha512": "6e025f8ba76ace0d1e162089f255e8383b78980b99271620e1b43ec478969ed3",
+   "size": 3975
+  },
+  "js/utils/Time.js": {
+   "sha512": "96977f61f5550daab62a171f9e3b1dc4c27a0094d97e6d431a7ce378b72aa23f",
+   "size": 1434
+  },
+  "js/utils/Translate.js": {
+   "sha512": "98f5c2399fa97a056ceeb8ec440437f14ca54648d3ec650778d43cd995407264",
+   "size": 684
+  },
+  "languages/es.json": {
+   "sha512": "5d1b043c47cc0bab3de580c7cadbbd6867055cbd628173e7de033d85ff761c36",
+   "size": 766
+  },
+  "languages/fa.json": {
+   "sha512": "a41801d253e0ba4101eb37f7ca18c4a2cb7ae705ec584592d249571de89311ad",
+   "size": 1719
+  },
+  "languages/zh-tw.json": {
+   "sha512": "f70d23fa77fa6707b84adf4c96efd0ec4a1389f4d16ac14e762b19259979f558",
+   "size": 913
+  },
+  "languages/zh.json": {
+   "sha512": "3d19da51fcf6b00a84def54d71e4026d54b030db367d3007194cdad5304a4f96",
+   "size": 901
+  }
+ },
+ "ignore": "(data/.*|css/(?!all\\.css)|.*\\.coffee|js/all\\.js|\\.git)",
+ "includes": {
+  "data/users/content.json": {
+   "signers": [],
+   "signers_required": 1
+  }
+ },
+ "inner_path": "content.json",
+ "modified": 1773630989,
+ "postmessage_nonce_security": true,
+ "settings": {
+  "categories": [
+   [2,"Blogs"],
+   [9,"Services"],
+   [1,"Forums, Boards"],
+   [10,"Chat"],
+   [6,"Video, Image"],
+   [8,"Guides"],
+   [7,"News"],
+   [5,"Politics"],
+   [3,"Other"]
+  ],
+  "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"]
+ },
+ "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HMAX+scmsvthQv0JKLvmYr9mQ2gmmxVI8lh5jiwHLeJKGN9PbPPPND91dSS+0AwRAUm/GV4RYH9f7QZ8k/pGRz8="},
+ "signs_required": 1,
+ "title": "Epix Sites"
+}

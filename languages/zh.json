@@ -1,0 +1,23 @@
+{
+	"Invalid site address: only EpixNet addresses supported": "\u65e0\u6548\u7684\u7ad9\u70b9\u5730\u5740\uff1a\u4ec5\u652f\u6301 EpixNet \u7ad9\u70b9\u5730\u5740",
+	"This field is required": "\u8be5\u680f\u4e3a\u5fc5\u586b\u9879",
+
+	"Popular": "\u70ed\u95e8",
+	"New": "\u65b0\u589e",
+
+	"Address": "\u5730\u5740",
+	"e.g. epix1abc123...": "\u4f8b\u5982 epix1abc123...",
+	"Title": "\u6807\u9898",
+	"e.g. Epix Blog": "\u4f8b\u5982 Epix Blog",
+	"Language": "\u8bed\u8a00",
+	"Category": "\u7c7b\u522b",
+	"Description": "\u63cf\u8ff0",
+	"e.g. EpixNet changelog and related information": "\u4f8b\u5982 EpixNet \u66f4\u65b0\u65e5\u5fd7\u548c\u76f8\u5173\u4fe1\u606f",
+	"Submit": "\u63d0\u4ea4",
+
+	"Site languages: ": "\u7ad9\u70b9\u8bed\u8a00",
+	"User: ": "\u7528\u6237\uff1a",
+	"Filter: ": "\u7b5b\u9009\u5668\uff1a",
+	"Submit new site": "\u63d0\u4ea4\u65b0\u7ad9\u70b9",
+	"Connect xID": "\u8fde\u63a5 xID"
+}
