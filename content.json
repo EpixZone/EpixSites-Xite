@@ -4,15 +4,23 @@
  "clone_root": "",
  "cloned_from": "epix1dashuu6pvsut7aw9dx44f543mv7xt9zlydsj9t",
  "description": "Discover More Sites",
- "epixnet_version": "0.0.2",
+ "epixnet_version": "0.0.6",
  "files": {
   "LICENSE": {
    "sha512": "e67014a69caa38c58575f333619243c9ebb3c98d462f0b4823ff5ed3d2cfdba3",
    "size": 1077
   },
+  "README.md": {
+   "sha512": "63d48710d3b37dd1c91c7b51cbf7e0d9959141bb17dc9726b29c8ecab5f2cbab",
+   "size": 1724
+  },
   "css/all.css": {
    "sha512": "50fd075034ede7ff78582a7a4c08bf9a3c2c1462211f5e8e8f084b6e928a1271",
    "size": 120826
+  },
+  "data-default/users/content-default.json": {
+   "sha512": "8cb251bbd5a19e295ccd9caa8e1846bea3b55c8dd20d7a5095d645366c6ba33f",
+   "size": 306
   },
   "dbschema.json": {
    "sha512": "c7cf9bfee254a000d4a6cd38776ca0cc7ba725c09012df85555fcd63a620aab2",
@@ -139,7 +147,7 @@
   }
  },
  "inner_path": "content.json",
- "modified": 1773630989,
+ "modified": 1775109155,
  "postmessage_nonce_security": true,
  "settings": {
   "categories": [
@@ -156,7 +164,7 @@
   "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"]
  },
  "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",
- "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HMAX+scmsvthQv0JKLvmYr9mQ2gmmxVI8lh5jiwHLeJKGN9PbPPPND91dSS+0AwRAUm/GV4RYH9f7QZ8k/pGRz8="},
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "G0JXyngkT/2oxhd8bhFZFNLNpLACsuiOyziirqyW879xWQY8jDobbn2I1/g/tWkuQmVBe3yj23N08Vma89dIqz0="},
  "signs_required": 1,
  "title": "Epix Sites"
 }
