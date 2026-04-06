@@ -4,15 +4,15 @@
  "clone_root": "",
  "cloned_from": "epix1dashuu6pvsut7aw9dx44f543mv7xt9zlydsj9t",
  "description": "Discover More Sites",
- "epixnet_version": "0.0.6",
+ "epixnet_version": "0.1.0",
  "files": {
   "LICENSE": {
    "sha512": "e67014a69caa38c58575f333619243c9ebb3c98d462f0b4823ff5ed3d2cfdba3",
    "size": 1077
   },
   "README.md": {
-   "sha512": "63d48710d3b37dd1c91c7b51cbf7e0d9959141bb17dc9726b29c8ecab5f2cbab",
-   "size": 1724
+   "sha512": "653264a8dc171989771fbb5ffe1a500e2b7d2021bd5f600ef973f4142629a963",
+   "size": 1731
   },
   "css/all.css": {
    "sha512": "50fd075034ede7ff78582a7a4c08bf9a3c2c1462211f5e8e8f084b6e928a1271",
@@ -51,8 +51,8 @@
    "size": 5187
   },
   "js/SiteList.js": {
-   "sha512": "8dfb83cdb98be2e378bb8454d7950a77e3a710f0f5d164ed0c9bc5061e5deb7d",
-   "size": 3088
+   "sha512": "bf08aa6765df3ab69a6b593dd01f9c946aaa9a24345ebfc187ca6a31d9c4a958",
+   "size": 3113
   },
   "js/SiteLists.js": {
    "sha512": "12bec718886bf87310deafc81a11321c500b02f9dd29937b11072a8b09bd367c",
@@ -147,7 +147,7 @@
   }
  },
  "inner_path": "content.json",
- "modified": 1775109155,
+ "modified": 1775504008,
  "postmessage_nonce_security": true,
  "settings": {
   "categories": [
@@ -159,12 +159,14 @@
    [8,"Guides"],
    [7,"News"],
    [5,"Politics"],
+   [11,"Crypto"],
+   [12,"Games"],
    [3,"Other"]
   ],
   "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"]
  },
  "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",
- "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "G0JXyngkT/2oxhd8bhFZFNLNpLACsuiOyziirqyW879xWQY8jDobbn2I1/g/tWkuQmVBe3yj23N08Vma89dIqz0="},
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HA4MbZDXVOOHdMEgBa0WJDfNIu8qnx+pfb+hnOtMC3UVXPxqbQmna9xB8ABhWCvulqPoDGdKUkuxBYjfjLnf8LY="},
  "signs_required": 1,
  "title": "Epix Sites"
 }

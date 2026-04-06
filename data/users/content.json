@@ -1,22 +1,10 @@
 {
  "address": "epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf",
- "files": {
-  "epixsites.db": {
-   "sha512": "6fa698e96c1629c548f8bc8595200b94c3f07d820c7b7076718abe7536bc45c3",
-   "size": 57344
-  },
-  "epixsites.db-shm": {
-   "sha512": "d8d75760f29b1e27ac9430bc4f4ffcec39f1590be5aef2bfb5a535850302e067",
-   "size": 32768
-  },
-  "epixsites.db-wal": {
-   "sha512": "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce",
-   "size": 0
-  }
- },
+ "files": {},
+ "ignore": ".*",
  "inner_path": "data/users/content.json",
- "modified": 1775109155,
- "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HKNHJMGGE54NPk1uMmYGnkvVpWNttdcXfyJM6o+1zeJkVKwxgo4k/hF7Ok9EOwGtkKzImkR1ebqBWenbYfOlGkc="},
+ "modified": 1775504008,
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "Gy3+yYoUoypYKw3SrdKQkczwVRmd7NT4opRLceMcmi+mHvHWCMxJv9KQMMhhKqVg1qDxxg3BwZSOoelBqLchRGg="},
  "user_contents": {
   "cert_signers": {
    "xid.epix": ["chain"]

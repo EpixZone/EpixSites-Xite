@@ -5,7 +5,7 @@ Discover more sites on [EpixNet](https://epixnet.io). A decentralized site direc
 ## Features
 
 - Browse sites by category and language
-- Categories: Blogs, Services, Forums, Chat, Video/Image, Guides, News, Politics, Other
+- Categories: Blogs, Services, Forums, Chat, Video/Image, Guides, News, Politics, Crypto, Games, Other
 - Star/favorite system for site ranking
 - Submit your own site to the directory
 - Edit existing listings

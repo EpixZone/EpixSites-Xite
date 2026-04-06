@@ -26,7 +26,7 @@
     }
 
     render(i) {
-      if (this.row.title === "Other" && Page.site_lists.filter_category !== this.row.id && Page.site_lists.cols === 3) {
+      if (this.row.title === "Other" && Page.site_lists.filter_category !== this.row.id && Page.site_lists.cols === 3 && this.sites.length > 3) {
         return this.renderWide(i);
       }
       var limit;
