@@ -18,6 +18,9 @@
       this.handleRadioClick = this.handleRadioClick.bind(this);
       this.renderField = this.renderField.bind(this);
       this.render = this.render.bind(this);
+      this.is_mine = true;
+      this.is_site_owner = false;
+      this.row_cert_user_id = null;
       this.reset();
     }
 
@@ -136,27 +139,53 @@
       return false;
     }
 
+    needsOwnerOverride() {
+      return !this.is_mine && this.is_site_owner;
+    }
+
+    promptOwnerKey(action_label, cb) {
+      var label = "Enter site private key to " + action_label + " " + (this.row_cert_user_id || "this user") + "'s entry:";
+      Page.cmd("wrapperPrompt", [label, "password"], (privatekey) => {
+        if (!privatekey) return;
+        cb(privatekey);
+      });
+    }
+
     handleSubmitClick() {
       if (!this.validate()) {
         return false;
       }
-      this.saveRow((res) => {
+      var done = (res) => {
         if (res === "ok") {
           this.hidden = true;
           Page.projector.scheduleRender();
         }
-      });
+      };
+      if (this.needsOwnerOverride()) {
+        this.promptOwnerKey("modify", (privatekey) => {
+          this.saveRow(done, privatekey);
+        });
+      } else {
+        this.saveRow(done);
+      }
       return false;
     }
 
     handleDeleteClick() {
-      Page.cmd("wrapperConfirm", ["Are you sure you want to delete this item?", "Delete"], () => {
+      var run = (privatekey) => {
         this.deleteRow((res) => {
           if (res === "ok") {
             this.hidden = true;
             Page.projector.scheduleRender();
           }
-        });
+        }, privatekey);
+      };
+      Page.cmd("wrapperConfirm", ["Are you sure you want to delete this item?", "Delete"], () => {
+        if (this.needsOwnerOverride()) {
+          this.promptOwnerKey("delete", run);
+        } else {
+          run();
+        }
       });
       return false;
     }
@@ -195,11 +224,13 @@
 
     render(classname) {
       if (classname === undefined) classname = "";
+      var can_delete = this.deleteRow && (this.is_mine || this.is_site_owner);
+      var delete_label = this.needsOwnerOverride() ? "Delete (owner)" : "Delete";
       return h("div.form-takeover-container#FormEdit", {afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover" + classname, {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp},
           this.fields.map(this.renderField),
           h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancelClick}, "Cancel"),
-          this.deleteRow ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, "Delete") : null,
+          can_delete ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, delete_label) : null,
           h("a.button.button-submit", {href: "#Modify", onclick: this.handleSubmitClick}, "Modify")
         )
       ]);

@@ -55,13 +55,25 @@
 
     getClasses() {
       return {
-        my: this.row.cert_user_id === Page.site_info.cert_user_id || Page.site_info.settings.own,
+        my: this.isMine() || this.isSiteOwner(),
         starred: Page.user.starred[this.getUri()]
       };
     }
 
-    saveRow(cb) {
-      var user = new User(this.row.directory);
+    isMine() {
+      return this.row.cert_user_id === Page.site_info.cert_user_id;
+    }
+
+    isSiteOwner() {
+      return !!Page.site_info.settings.own;
+    }
+
+    rowUser() {
+      return new User(null, this.row.directory);
+    }
+
+    saveRow(cb, privatekey) {
+      var user = this.isMine() ? Page.user : this.rowUser();
       user.getData((data) => {
         var data_row;
         for (var i = 0; i < data.site.length; i++) {
@@ -69,6 +81,10 @@
             data_row = data.site[i];
             break;
           }
+        }
+        if (!data_row) {
+          if (typeof cb === "function") cb({"error": "Row not found in user data"});
+          return;
         }
         for (var key in this.row) {
           if (data_row[key]) {
@@ -78,24 +94,29 @@
         user.save(data, (res) => {
           Page.site_lists.update();
           if (typeof cb === "function") cb(res);
-        });
+        }, privatekey);
       });
     }
 
-    deleteRow(cb) {
-      Page.user.getData((data) => {
-        var data_row_i;
+    deleteRow(cb, privatekey) {
+      var user = this.isMine() ? Page.user : this.rowUser();
+      user.getData((data) => {
+        var data_row_i = -1;
         for (var i = 0; i < data.site.length; i++) {
           if (data.site[i].site_id === this.row.site_id) {
             data_row_i = i;
             break;
           }
         }
+        if (data_row_i === -1) {
+          if (typeof cb === "function") cb({"error": "Row not found in user data"});
+          return;
+        }
         data.site.splice(data_row_i, 1);
-        Page.user.save(data, (res) => {
+        user.save(data, (res) => {
           Page.site_lists.update();
           if (typeof cb === "function") cb(res);
-        });
+        }, privatekey);
       });
     }
 
@@ -111,12 +132,15 @@
       this.form_edit.setData(this.row);
       this.form_edit.saveRow = this.saveRow;
       this.form_edit.deleteRow = this.deleteRow;
+      this.form_edit.is_mine = this.isMine();
+      this.form_edit.is_site_owner = this.isSiteOwner();
+      this.form_edit.row_cert_user_id = this.row.cert_user_id;
       Page.setFormEdit(this.form_edit);
       return false;
     }
 
     render() {
-      var my = this.row.cert_user_id === Page.site_info.cert_user_id || Page.site_info.settings.own;
+      var my = this.isMine() || this.isSiteOwner();
 
       return h("a.site.nocomment", {href: "/" + this.row.address, key: this.row.site_id, enterAnimation: Animation.slideDown, exitAnimation: Animation.slideUp, classes: this.getClasses()}, [
         h("div.right", [

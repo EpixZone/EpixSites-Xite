@@ -4,15 +4,15 @@
  "clone_root": "",
  "cloned_from": "epix1dashuu6pvsut7aw9dx44f543mv7xt9zlydsj9t",
  "description": "Discover More Sites",
- "epixnet_version": "0.1.0",
+ "epixnet_version": "0.2.4",
  "files": {
   "LICENSE": {
    "sha512": "e67014a69caa38c58575f333619243c9ebb3c98d462f0b4823ff5ed3d2cfdba3",
    "size": 1077
   },
   "README.md": {
-   "sha512": "653264a8dc171989771fbb5ffe1a500e2b7d2021bd5f600ef973f4142629a963",
-   "size": 1731
+   "sha512": "d76865b47d150380da09be84894400163cdf29c2fa045e2a4a128719daa053b8",
+   "size": 1739
   },
   "css/all.css": {
    "sha512": "50fd075034ede7ff78582a7a4c08bf9a3c2c1462211f5e8e8f084b6e928a1271",
@@ -43,8 +43,8 @@
    "size": 989
   },
   "js/Site.js": {
-   "sha512": "284e3ff88b166ac0942c9d7b600a5c8a80982303923f827f675fdf88bcd60561",
-   "size": 4913
+   "sha512": "f041149b774bac2f4c7100f4f685e3f7462f733b4f69cb619f44e2543f4b215e",
+   "size": 5616
   },
   "js/SiteAdd.js": {
    "sha512": "f0b1e31613f7af865d78c351f5ba837fe86a710ff4ab2459cf82b285a154a13d",
@@ -59,8 +59,8 @@
    "size": 8104
   },
   "js/User.js": {
-   "sha512": "40b58032c535a7315329bf8d26d4e1439c2862dc71aa3fc594fbf7cd707641d4",
-   "size": 2851
+   "sha512": "f878c1727dda556ee789a59b43209fc09bfb998c0eeb139308d5a7e921ed34da",
+   "size": 3252
   },
   "js/lib/anime.min.js": {
    "sha512": "10669107a89bdf6ce9d2c074e20866a903d77264f3ab87f7f45ea5b8abfb84ee",
@@ -87,8 +87,8 @@
    "size": 168
   },
   "js/utils/Form.js": {
-   "sha512": "a0c8f65d96d1a2b8d01c87f807154dedf2f211a72e47d444326c00d05708ff57",
-   "size": 6858
+   "sha512": "16b43100529e1ff656223962d646a26ab5c40e9e45fcf572f8e3b3e3d2bf037e",
+   "size": 7891
   },
   "js/utils/ItemList.js": {
    "sha512": "6b250d92599ce239a117d7ec550df5acd2448aae1fffc16e3b423373c3e3acff",
@@ -147,7 +147,7 @@
   }
  },
  "inner_path": "content.json",
- "modified": 1775504008,
+ "modified": 1777229743,
  "postmessage_nonce_security": true,
  "settings": {
   "categories": [
@@ -166,7 +166,7 @@
   "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"]
  },
  "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",
- "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HA4MbZDXVOOHdMEgBa0WJDfNIu8qnx+pfb+hnOtMC3UVXPxqbQmna9xB8ABhWCvulqPoDGdKUkuxBYjfjLnf8LY="},
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "G5nfBCF0nd5q0eLcL5CLzoCHs/oWqOLgxyjHHFAoPg0wLWFOoKB34Bhp2nWAQLz3bkwZfS2CwPhy/c55kr1yrAY="},
  "signs_required": 1,
  "title": "Epix Sites"
 }

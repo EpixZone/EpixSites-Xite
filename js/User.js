@@ -1,8 +1,9 @@
 (function() {
 
   class User {
-    constructor(auth_address) {
+    constructor(auth_address, directory) {
       this.starred = {};
+      this.directory_override = directory || null;
       this.certSelect = this.certSelect.bind(this);
       this.resolveXid = this.resolveXid.bind(this);
       this.onSiteInfo = this.onSiteInfo.bind(this);
@@ -31,6 +32,9 @@
     }
 
     getUserDirectory() {
+      if (this.directory_override) {
+        return this.directory_override;
+      }
       if (Page.site_info && Page.site_info.xid_directory) {
         return Page.site_info.xid_directory;
       }
@@ -84,11 +88,18 @@
       }
     }
 
-    save(data, cb) {
+    save(data, cb, privatekey) {
+      var inner_path_content = this.getPath() + "/content.json";
+      var sign_params = {"inner_path": inner_path_content};
+      var publish_params = {"inner_path": inner_path_content, sign: false};
+      if (privatekey) {
+        sign_params.privatekey = privatekey;
+        publish_params.privatekey = privatekey;
+      }
       Page.cmd("fileWrite", [this.getPath() + "/data.json", Text.fileEncode(data)], (res_write) => {
-        Page.cmd("siteSign", {"inner_path": this.getPath() + "/content.json"}, (res_sign) => {
+        Page.cmd("siteSign", sign_params, (res_sign) => {
           if (typeof cb === "function") cb(res_sign);
-          Page.cmd("sitePublish", {"inner_path": this.getPath() + "/content.json", sign: false}, (res_publish) => {
+          Page.cmd("sitePublish", publish_params, (res_publish) => {
             this.log("Save result", res_write, res_sign, res_publish);
           });
         });
