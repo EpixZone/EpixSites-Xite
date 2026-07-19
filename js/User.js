@@ -61,6 +61,47 @@
       });
     }
 
+    // Guarded read for the write/publish path.
+    //
+    // getData() reads data.json with required:false, which is a LOCAL-only
+    // read. On a device that has not synced this user's data.json yet, that
+    // read MISSES and getData() falls back to a blank default. If a content
+    // write (add/star/edit/delete) then saves and publishes that default, it
+    // signs a blank over the network (last-writer-wins) and wipes the user's
+    // real data everywhere.
+    //
+    // So for content writes go through here instead of getData(): if the local
+    // read misses, trigger a sync and re-read. If the file is now present, use
+    // the REAL data (no clobber). If it is STILL absent after the sync attempt,
+    // ABORT by calling cb(null) so the caller does NOT write/publish, and tell
+    // the user to retry. Only a genuinely new user (never published) reaches
+    // the still-absent state here; a full merge-based fix comes later.
+    getDataForWrite(cb) {
+      var path = this.getPath() + "/data.json";
+      Page.cmd("fileGet", [path, false], (data) => {
+        if (data != null) {
+          // File is present locally: safe to use the real data.
+          cb(JSON.parse(data));
+          return;
+        }
+        // Local miss: pull the latest from peers before deciding.
+        var address = Page.site_info ? Page.site_info.address : null;
+        Page.cmd("siteUpdate", {"address": address}, () => {
+          Page.cmd("fileGet", [path, false], (data2) => {
+            if (data2 != null) {
+              // Recovered after sync: use the real data, do not clobber.
+              cb(JSON.parse(data2));
+            } else {
+              // Still absent after a sync attempt. Refuse to overwrite an
+              // unsynced file with a blank/default; ask the user to retry.
+              Page.cmd("wrapperNotification", ["info", "Your data is still syncing, please try again in a moment."]);
+              cb(null);
+            }
+          });
+        });
+      });
+    }
+
     certSelect(cb) {
       Page.cmd("certXid", {}, (res) => {
         this.log("certXid result", res);

@@ -40,7 +40,14 @@
       Page.user.starred[this.getUri()] = !Page.user.starred[this.getUri()];
       Page.projector.scheduleRender();
 
-      Page.user.getData((data) => {
+      Page.user.getDataForWrite((data) => {
+        if (data == null) {
+          // Guard aborted the write (data.json still syncing). Revert the
+          // optimistic star toggle so the UI matches the unchanged data.
+          Page.user.starred[this.getUri()] = !Page.user.starred[this.getUri()];
+          Page.projector.scheduleRender();
+          return;
+        }
         if (action === "adding") {
           data.site_star[this.getUri()] = 1;
         } else {
@@ -74,7 +81,13 @@
 
     saveRow(cb, privatekey) {
       var user = this.isMine() ? Page.user : this.rowUser();
-      user.getData((data) => {
+      user.getDataForWrite((data) => {
+        if (data == null) {
+          // Guard aborted the write (data.json still syncing). Report so the
+          // form does not treat it as saved.
+          if (typeof cb === "function") cb({"error": "Your data is still syncing, please try again in a moment"});
+          return;
+        }
         var data_row;
         for (var i = 0; i < data.site.length; i++) {
           if (data.site[i].site_id === this.row.site_id) {
@@ -100,7 +113,13 @@
 
     deleteRow(cb, privatekey) {
       var user = this.isMine() ? Page.user : this.rowUser();
-      user.getData((data) => {
+      user.getDataForWrite((data) => {
+        if (data == null) {
+          // Guard aborted the write (data.json still syncing). Report so the
+          // form does not treat it as deleted.
+          if (typeof cb === "function") cb({"error": "Your data is still syncing, please try again in a moment"});
+          return;
+        }
         var data_row_i = -1;
         for (var i = 0; i < data.site.length; i++) {
           if (data.site[i].site_id === this.row.site_id) {

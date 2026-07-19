@@ -46,7 +46,14 @@
       this.submitting = true;
       Page.projector.scheduleRender();
 
-      Page.user.getData((data) => {
+      Page.user.getDataForWrite((data) => {
+        if (data == null) {
+          // Guard aborted the write (data.json still syncing). Reset the form
+          // state so the user can retry once syncing has caught up.
+          this.submitting = false;
+          Page.projector.scheduleRender();
+          return;
+        }
         var row_site = this.form.data;
         row_site.date_added = Time.timestamp();
         row_site.site_id = row_site.date_added;
