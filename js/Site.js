@@ -30,32 +30,23 @@
         return false;
       }
 
-      var action;
-      if (Page.user.starred[this.getUri()]) {
-        action = "removing";
-      } else {
-        action = "adding";
-      }
+      var uri = this.getUri();
+      var starring = !Page.user.starred[uri];
 
-      Page.user.starred[this.getUri()] = !Page.user.starred[this.getUri()];
+      // Optimistic toggle.
+      Page.user.starred[uri] = starring;
       Page.projector.scheduleRender();
 
-      Page.user.getDataForWrite((data) => {
-        if (data == null) {
-          // Guard aborted the write (data.json still syncing). Revert the
-          // optimistic star toggle so the UI matches the unchanged data.
-          Page.user.starred[this.getUri()] = !Page.user.starred[this.getUri()];
-          Page.projector.scheduleRender();
-          return;
+      // A star is a live signed record keyed by the starred site uri; an unstar
+      // is a signed tombstone of the same key. Union-merged into stars.json, so
+      // it can never clobber another star and needs no sync guard.
+      Page.user.editRecord("stars", uri, {"site_uri": uri, "value": 1}, !starring, (res) => {
+        if (res !== "ok") {
+          // Revert the optimistic toggle if the write did not go through.
+          Page.user.starred[uri] = !starring;
         }
-        if (action === "adding") {
-          data.site_star[this.getUri()] = 1;
-        } else {
-          delete data.site_star[this.getUri()];
-        }
-        Page.user.save(data, (res) => {
-          Page.site_lists.update();
-        });
+        Page.projector.scheduleRender();
+        Page.site_lists.update();
       });
       return false;
     }
@@ -80,7 +71,31 @@
     }
 
     saveRow(cb, privatekey) {
-      var user = this.isMine() ? Page.user : this.rowUser();
+      if (this.isMine()) {
+        // An edit is a new signed version of the same site record (same key ->
+        // same post_id -> supersedes); it can never touch another submission.
+        Page.user.editRecord("sites", "site_" + this.row.site_id, {
+          "site_id": this.row.site_id,
+          "date_added": this.row.date_added,
+          "category": this.row.category,
+          "language": this.row.language,
+          "title": this.row.title,
+          "description": this.row.description,
+          "address": this.row.address,
+          "tags": this.row.tags
+        }, false, (res) => {
+          Page.site_lists.update();
+          if (typeof cb === "function") cb(res);
+        });
+        return;
+      }
+
+      // Owner override of ANOTHER user's entry still writes their legacy
+      // data.json (last-writer-wins). Cross-author moderation is not part of the
+      // signed-CRDT migration yet: it needs a moderation tombstone signed as the
+      // original author, which recordSign (which signs as the current user)
+      // cannot produce.
+      var user = this.rowUser();
       user.getDataForWrite((data) => {
         if (data == null) {
           // Guard aborted the write (data.json still syncing). Report so the
@@ -112,7 +127,19 @@
     }
 
     deleteRow(cb, privatekey) {
-      var user = this.isMine() ? Page.user : this.rowUser();
+      if (this.isMine()) {
+        // A delete is a signed tombstone of this site record, NOT a splice:
+        // absence is not deletion on the network.
+        Page.user.editRecord("sites", "site_" + this.row.site_id, {}, true, (res) => {
+          Page.site_lists.update();
+          if (typeof cb === "function") cb(res);
+        });
+        return;
+      }
+
+      // Owner override of another user's entry: legacy data.json path (see
+      // saveRow for why moderation is not migrated yet).
+      var user = this.rowUser();
       user.getDataForWrite((data) => {
         if (data == null) {
           // Guard aborted the write (data.json still syncing). Report so the

@@ -46,32 +46,35 @@
       this.submitting = true;
       Page.projector.scheduleRender();
 
-      Page.user.getDataForWrite((data) => {
-        if (data == null) {
-          // Guard aborted the write (data.json still syncing). Reset the form
-          // state so the user can retry once syncing has caught up.
+      // A new site is a fresh signed record keyed by its site id, so a later
+      // edit or delete supersedes it. The node union-merges it into sites.json
+      // (never overwriting other submissions) and publishes - no sync guard
+      // needed, a union write can never clobber the on-disk set.
+      var date_added = Time.timestamp();
+      var site_id = date_added;
+      var fields = {
+        "site_id": site_id,
+        "date_added": date_added,
+        "category": this.form.data["category"],
+        "language": this.form.data["language"],
+        "title": this.form.data["title"],
+        "description": this.form.data["description"],
+        "address": this.form.data["address"]
+      };
+      Page.user.editRecord("sites", "site_" + site_id, fields, false, (res) => {
+        if (res === "ok") {
+          this.close();
+          Page.head.active = "new";
+          Page.setUrl("?Category:" + fields.category);
+          setTimeout(() => {
+            this.submitting = false;
+            this.form.reset();
+            Page.site_lists.update();
+          }, 1000);
+        } else {
           this.submitting = false;
           Page.projector.scheduleRender();
-          return;
         }
-        var row_site = this.form.data;
-        row_site.date_added = Time.timestamp();
-        row_site.site_id = row_site.date_added;
-        data.site.push(row_site);
-        Page.user.save(data, (res) => {
-          if (res === "ok") {
-            this.close();
-            Page.head.active = "new";
-            Page.setUrl("?Category:" + row_site.category);
-            setTimeout(() => {
-              this.submitting = false;
-              this.form.reset();
-              Page.site_lists.update();
-            }, 1000);
-          } else {
-            this.submitting = false;
-          }
-        });
       });
       return false;
     }

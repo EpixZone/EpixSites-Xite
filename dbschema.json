@@ -3,11 +3,15 @@
 	"db_file": "data/users/epixsites.db",
 	"version": 2,
 	"maps": {
-        ".+/data.json": {
-            "to_table": [
-            	"site",
-            	{"node": "site_star", "table": "site_star", "key_col": "site_uri", "val_col": "value"}
-            ]
+        ".+/sites.json": {
+            "to_table": [ {"node": "post", "table": "site"} ],
+            "file_name": "data.json",
+            "fold_crdt": "post"
+        },
+        ".+/stars.json": {
+            "to_table": [ {"node": "post", "table": "site_star"} ],
+            "file_name": "data.json",
+            "fold_crdt": "post"
         },
         ".+/content.json": {
             "to_json_table": [ "cert_user_id" ],
