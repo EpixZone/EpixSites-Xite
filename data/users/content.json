@@ -1,33 +1,30 @@
 {
  "address": "epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf",
  "files": {},
- "ignore": ".*",
+ "ignore": ".",
  "inner_path": "data/users/content.json",
- "modified": 1777229743,
- "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "G2q3J6TejfU6MBEy5vqysDslvOYVDlXQXNvrzo7vonOkPCUQ7fFdGjIKRPilDmqyl+PRKADrOz45NV6LRCLBctM="},
+ "modified": 1785266697,
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "GxUefJOtMbM7vcTScjnW8GgkU0lUyeinYQckeA2uRnEfRZYOum1FkCuDhc+emqKFOzxoqH7656hK7twlxniHp5E="},
  "user_contents": {
   "cert_signers": {
    "xid.epix": ["chain"]
   },
   "permission_rules": {
-   ".*": {
+   ".": {
     "files_allowed": "data.json",
     "max_size": 200000,
     "merge_files": {
-     "sites.json": {"class": "epix-orset-1", "max_size": 3000000},
-     "stars.json": {"class": "epix-orset-1", "max_size": 3000000}
+     "sites.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "stars.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     }
     }
    }
   },
-  "permissions": {
-   ".*": {
-    "files_allowed": "data.json",
-    "max_size": 200000,
-    "merge_files": {
-     "sites.json": {"class": "epix-orset-1", "max_size": 3000000},
-     "stars.json": {"class": "epix-orset-1", "max_size": 3000000}
-    }
-   }
-  }
+  "permissions": {}
  }
 }
