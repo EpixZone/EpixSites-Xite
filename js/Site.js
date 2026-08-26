@@ -360,6 +360,9 @@
           h("div.site-chips", {onclick: this.handleEvidenceClick}, this.renderChips(info))
         ]),
         h("div.site-description", this.row.description),
+        this.row.tags ? h("div.site-tags", ("" + this.row.tags).split(",").filter(function(t) { return t; }).slice(0, 4).map(function(t) {
+          return h("span.site-tag", {key: t}, t);
+        })) : null,
         (state === "warned" || state === "delisted") ? h("div.site-banner", [
           h("span.site-banner-text", state === "delisted" ? "Delisted by community reports" : "Reported by the community"),
           h("a.site-banner-why", {href: "#Evidence", onclick: this.handleEvidenceClick}, this.show_evidence ? "hide" : "why?")

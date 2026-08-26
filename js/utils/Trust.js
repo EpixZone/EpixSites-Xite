@@ -13,6 +13,7 @@
   var DEFAULTS = {
     editor_weight: 3,
     member_weight: 1,
+    member_pattern: "\\.epix$",
     warn_net: 2,
     delist_net: 5,
     delist_min_reporters: 2,
@@ -55,10 +56,26 @@
       return this.editors().indexOf(directory) !== -1;
     }
 
+    // Which directories count as paid member identities. Owner-tunable like
+    // every other trust constant (the chain supports more TLDs than .epix);
+    // the default stays the chain-registered .epix name.
+    memberRegex() {
+      var pattern = this.config().member_pattern;
+      if (this._member_src !== pattern) {
+        try {
+          this._member_re = new RegExp(pattern);
+        } catch (err) {
+          this._member_re = new RegExp(DEFAULTS.member_pattern);
+        }
+        this._member_src = pattern;
+      }
+      return this._member_re;
+    }
+
     weightOf(directory) {
       if (!directory) return 0;
       if (this.isEditor(directory)) return this.config().editor_weight;
-      if (/\.epix$/.test(directory)) return this.config().member_weight;
+      if (this.memberRegex().test(directory)) return this.config().member_weight;
       return 0;
     }
 

@@ -372,6 +372,12 @@ h2.empty {
 .site-card.blur .site-description { filter: blur(4px); }
 .site-card.blur:hover .site-description { filter: none; }
 
+.site-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.site-tag {
+  font-size: 10px; font-weight: 500; padding: 1px 8px;
+  border-radius: 999px; background: var(--surface2); color: var(--muted);
+}
+
 .site-banner {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 10px; border-radius: 6px;
