@@ -13,7 +13,7 @@
  },
  "clone_root": "",
  "cloned_from": "epix1dashuu6pvsut7aw9dx44f543mv7xt9zlydsj9t",
- "description": "Discover More Sites",
+ "description": "Search and discover xites",
  "distribution": {
   "default": {
    "retention": "complete",
@@ -265,32 +265,66 @@
  "ignore": "(data/.*|css/(?!all\\.css)|.*\\.coffee|js/all\\.js|\\.git)",
  "includes": {
   "data/users/content.json": {
-   "signers": [],
+   "signers": ["mud.epix"],
    "signers_required": 1
+  }
+ },
+ "feeds": {
+  "listings": {
+   "clock_unit": "ms",
+   "files": "data/users/*/sites.json",
+   "kind": {
+    "default": "site"
+   },
+   "map": {
+    "author": "author",
+    "clock": "clock",
+    "id": "post_id",
+    "target": null
+   },
+   "record_format": "epix-orset-1",
+   "record_key": "post"
   }
  },
  "inner_path": "content.json",
  "modified": 1785365886,
  "order_policy": {
-  "first_paint": ["index.html","css/all.css","js/lib/maquette.js","js/lib/anime.min.js","js/lib/epixframe.js","js/utils/LogMixin.js","js/utils/Deferred.js","js/utils/Dollar.js","js/utils/Prototypes.js","js/utils/RateLimit.js","js/utils/Animation.js","js/utils/Time.js","js/utils/Translate.js","js/utils/Text.js","js/utils/Menu.js","js/utils/ItemList.js","js/utils/Form.js","js/User.js","js/Head.js","js/Site.js","js/SiteAdd.js","js/SiteList.js","js/SiteLists.js","js/EpixSites.js"],
+  "first_paint": ["index.html","css/all.css","js/lib/maquette.js","js/lib/anime.min.js","js/lib/epixframe.js","js/utils/LogMixin.js","js/utils/Deferred.js","js/utils/Dollar.js","js/utils/Prototypes.js","js/utils/RateLimit.js","js/utils/Animation.js","js/utils/Time.js","js/utils/Translate.js","js/utils/Text.js","js/utils/Menu.js","js/utils/ItemList.js","js/utils/Form.js","js/utils/Trust.js","js/User.js","js/Head.js","js/Site.js","js/SiteAdd.js","js/SiteList.js","js/SiteLists.js","js/EpixSites.js"],
   "prefetch": ["img/logo.png","dbschema.json"]
  },
  "postmessage_nonce_security": true,
  "settings": {
   "categories": [
-   [2,"Blogs"],
-   [9,"Services"],
-   [1,"Forums, Boards"],
+   [2,"Blogs & Personal"],
+   [9,"Services & Tools"],
+   [1,"Forums & Boards"],
    [10,"Chat"],
-   [6,"Video, Image"],
-   [8,"Guides"],
+   [6,"Media"],
+   [8,"Guides & Reference"],
    [7,"News"],
-   [5,"Politics"],
-   [11,"Crypto"],
+   [5,"Politics & Society"],
+   [11,"Crypto & Markets"],
    [12,"Games"],
+   [14,"Development"],
+   [13,"Adult"],
    [3,"Other"]
   ],
-  "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"]
+  "editors": ["mud.epix"],
+  "languages": ["da","de","en","es","fr","hu","it","nl","pl","pt","pt-br","ru","tr","uk","zh","zh-tw","multi"],
+  "subcats": {},
+  "trust": {
+   "adult_abs": 1.5,
+   "adult_frac": 0.35,
+   "delist_min_reporters": 2,
+   "delist_net": 5,
+   "editor_weight": 3,
+   "mature_abs": 1,
+   "mature_frac": 0.5,
+   "member_weight": 1,
+   "settle_weight": 3,
+   "sev": {"malware": 1, "illegal": 1, "scam": 1, "dead": 0, "spam": 0},
+   "warn_net": 2
+  }
  },
  "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",
  "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HFG7EYj1kq/uIRU2HBhx1T9u8+vW00Z/oejXnc7fVwVGAKpLBdR3ESYTGn2vgYZd6CV2yEB4QV0jyLkZp6fUGCE="},

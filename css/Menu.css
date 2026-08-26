@@ -1,31 +1,36 @@
+/* Dropdown menus (filter menu, card actions menu). */
+
 .menu {
-	background-color: white; padding: 10px 0px; position: absolute; top: 0px; max-height: 0px; overflow: hidden; transform: translate(-100%, -30px); pointer-events: none;
-	box-shadow: 0px 2px 8px rgba(0,0,0,0.3); border-radius: 2px; opacity: 0; transition: opacity 0.2s ease-out, transform 1s ease-out, max-height 0.2s ease-in-out; z-index: 99;
-	display: inline-block; z-index: 999;
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
+  min-width: 220px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0; transform: translateY(-4px); pointer-events: none;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
 }
-.menu.visible {
-	opacity: 1; max-height: 500px; transform: translate(-100%, 0px); pointer-events: all;
-	transition: opacity 0.1s ease-out, transform 0.3s ease-out, max-height 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+.menu.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.menu-item {
+  display: block; padding: 8px 12px; border-radius: 6px;
+  font-size: 13px; color: var(--text); white-space: nowrap;
 }
+.menu-item:hover { background: var(--surface2); }
+.menu-item.selected { color: var(--accent); font-weight: 600; }
+.menu-item.noaction { color: var(--muted); cursor: default; white-space: normal; }
+.menu-item-separator { height: 1px; background: var(--border); margin: 6px 4px; }
 
-.menu-item { display: block; text-decoration: none; color: black; padding: 6px 24px; transition: all 0.2s; border-bottom: none; font-weight: normal; }
-.menu-item .emoji { opacity: 0.6 }
-.menu-item-separator { margin-top: 3px; margin-bottom: 3px; border-top: 1px solid #eee }
+.actions-menu { font-weight: 500; }
 
-.menu-item.noaction { cursor: default }
-.menu-item:hover:not(.noaction) { background-color: #F6F6F6; transition: none; color: inherit; cursor: pointer; color: black }
-.menu-item:active:not(.noaction), .menu-item:focus:not(.noaction) { background-color: #AF3BFF; color: white; transition: none }
-.menu-item.selected:before {
-	content: "L"; display: inline-block; transform: rotateZ(45deg) scaleX(-1);
-	font-weight: bold; position: absolute; margin-left: -14px; font-size: 12px; margin-top: 2px;
-}
-
-.menu-radio { white-space: normal; line-height: 26px; margin-left: -7px }
+/* Language filter panel inside the menu */
+.menu.filter { width: 360px; }
+.menu-radio { padding: 8px 10px; font-size: 12.5px; color: var(--muted); }
+.menu-radio > div { margin-bottom: 8px; font-weight: 600; }
 .menu-radio a {
-	background-color: #EEE; width: 18.5%;; text-align: center; margin-top: 2px; margin-bottom: 2px; color: #666; font-weight: bold; box-sizing: border-box;
-	text-decoration: none; font-size: 13px; transition: all 0.3s; text-transform: uppercase; display: inline-block; border: 2px solid transparent;
+  display: inline-block; margin: 0 4px 6px 0; padding: 3px 9px;
+  border: 1px solid var(--border); border-radius: 999px;
+  font-size: 11px; text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
 }
-.menu-radio a.selected { background-color: #AF3BFF; color: white }
-.menu-radio a:hover { border: 2px solid #AF3BFF; transition: none }
-
-.menu-radio a.long { font-size: 11px }
+.menu-radio a:hover { border-color: var(--border-strong); color: var(--text); }
+.menu-radio a.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.menu-radio a.all { font-weight: 600; }

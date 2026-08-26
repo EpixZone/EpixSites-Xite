@@ -14,6 +14,9 @@
       this.on_local_storage = new Deferred();
       this.on_loaded = new Deferred();
 
+      this.sync_visible = false;
+      this.sync_hide_timer = null;
+
       this.user = new User();
       this.on_site_info.then(() => {
         this.user.setAuthAddress(this.site_info.auth_address);
@@ -22,9 +25,12 @@
       this.local_storage = null;
       this.languages = [];
       this.categories = [];
+      this.subcats = {};
       this.on_site_info.then(() => {
-        this.languages = this.site_info.content.settings.languages;
-        this.categories = this.site_info.content.settings.categories;
+        var settings = this.site_info.content.settings;
+        this.languages = settings.languages;
+        this.categories = settings.categories;
+        this.subcats = settings.subcats || {};
       });
 
       this.handleLinkClick = this.handleLinkClick.bind(this);
@@ -34,6 +40,7 @@
       this.projector = maquette.createProjector();
       this.head = new Head();
       this.site_lists = new SiteLists();
+      this.form_edit = null;
 
       if (base.href.indexOf("?") === -1) {
         this.route("");
@@ -43,16 +50,16 @@
         this.history_state["url"] = url;
       }
 
-      // Remove fake long body
-      this.on_loaded.then(() => {
-        this.log("onloaded");
-        window.requestAnimationFrame(function() {
-          document.body.className = "loaded";
-        });
-      });
+      this.armLoaded();
 
       this.projector.replace($("#Head"), this.head.render);
       this.projector.replace($("#SiteLists"), this.site_lists.render);
+      // One stable FormEdit projection; forms are swapped through
+      // this.form_edit. Calling projector.replace per open would leak a
+      // projection (maquette never drops replaced ones).
+      this.projector.replace($("#FormEdit"), () => {
+        return h("div#FormEdit", [this.form_edit ? this.form_edit.render() : null]);
+      });
       this.loadLocalStorage();
 
       // Update every minute to keep time since fields up-to date
@@ -61,24 +68,56 @@
       }, 60 * 1000);
     }
 
+    // Remove the fake long body once the current view has loaded. Deferred
+    // callbacks are one-shot (resolve() clears the list), so every navigation
+    // that resets on_loaded.resolved must re-arm this.
+    armLoaded() {
+      this.on_loaded.then(() => {
+        this.log("onloaded");
+        window.requestAnimationFrame(function() {
+          document.body.classList.add("loaded");
+        });
+      });
+    }
+
     setFormEdit(form_edit) {
       form_edit.hidden = false;
-      this.projector.replace($("#FormEdit"), form_edit.render);
+      this.form_edit = form_edit;
+      this.projector.scheduleRender();
     }
 
     route(query) {
       this.params = Text.parseQuery(query);
-      var parts = this.params.url.split(":");
+      var parts = ("" + (this.params.url || "")).split(":");
       var page = parts[0];
-      var param = parts[1];
+      var param = parts.slice(1).join(":");
       this.content = this.site_lists;
       if (page === "Category") {
         this.site_lists.setFilterCategory(parseInt(param));
+        this.clearSearch();
+        if (this.head.active === "flagged") this.head.active = "popular";
+      } else if (page === "Search") {
+        this.site_lists.setFilterCategory(null);
+        if (this.head.active === "flagged") this.head.active = "popular";
+        this.head.search_text = param;
+        this.site_lists.setSearch(param);
+      } else if (page === "Flagged") {
+        this.site_lists.setFilterCategory(null);
+        this.head.active = "flagged";
       } else {
         this.site_lists.setFilterCategory(null);
+        this.clearSearch();
+        if (this.head.active === "flagged") this.head.active = "popular";
       }
       Page.projector.scheduleRender();
       this.log("Route", page, param);
+    }
+
+    clearSearch() {
+      if (this.head.search_text) {
+        this.head.search_text = "";
+        this.site_lists.setSearch("");
+      }
     }
 
     setUrl(url, mode) {
@@ -107,14 +146,17 @@
         this.history_state["scrollTop"] = window.pageYOffset;
         this.cmd("wrapperReplaceState", [this.history_state, null]);
 
-        if (document.body.scrollTop > 100) {
-          anime({targets: document.body, scrollTop: 0, easing: "easeOutCubic", duration: 300});
+        if (window.pageYOffset > 100) {
+          // document.body never scrolls in standards mode; the viewport
+          // scroller is documentElement.
+          anime({targets: document.scrollingElement || document.documentElement, scrollTop: 0, easing: "easeOutCubic", duration: 300});
         }
 
         this.history_state["scrollTop"] = 0;
 
         this.on_loaded.resolved = false;
-        document.body.className = "";
+        document.body.classList.remove("loaded");
+        this.armLoaded();
 
         this.setUrl(e.currentTarget.search);
         return false;
@@ -191,7 +233,8 @@
             params.state.url = params.href.replace(/.*\?/, "");
           }
           this.on_loaded.resolved = false;
-          document.body.className = "";
+          document.body.classList.remove("loaded");
+          this.armLoaded();
           window.scroll(window.pageXOffset, params.state.scrollTop || 0);
           this.route(params.state.url || "");
         }
@@ -200,9 +243,34 @@
       }
     }
 
+    // First-load sync affordance. Show while the node is still pulling files,
+    // hide only after the busy signal stays quiet for a beat: transient
+    // tasks-zero events replayed through a stale RateLimit (the DeFlix
+    // loading-bar flicker) must not blink the bar.
+    updateSyncState(site_info) {
+      var busy = (site_info.tasks || 0) > 0 || (site_info.bad_files || 0) > 0;
+      if (busy) {
+        if (this.sync_hide_timer) {
+          clearTimeout(this.sync_hide_timer);
+          this.sync_hide_timer = null;
+        }
+        if (!this.sync_visible) {
+          this.sync_visible = true;
+          this.projector.scheduleRender();
+        }
+      } else if (this.sync_visible && !this.sync_hide_timer) {
+        this.sync_hide_timer = setTimeout(() => {
+          this.sync_hide_timer = null;
+          this.sync_visible = false;
+          this.projector.scheduleRender();
+        }, 800);
+      }
+    }
+
     setSiteInfo(site_info) {
       this.site_info = site_info;
       this.on_site_info.resolve();
+      this.updateSyncState(site_info);
       this.site_lists.onSiteInfo(site_info);
       this.user.onSiteInfo(site_info);
       this.projector.scheduleRender();

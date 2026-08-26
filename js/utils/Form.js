@@ -18,9 +18,6 @@
       this.handleRadioClick = this.handleRadioClick.bind(this);
       this.renderField = this.renderField.bind(this);
       this.render = this.render.bind(this);
-      this.is_mine = true;
-      this.is_site_owner = false;
-      this.row_cert_user_id = null;
       this.reset();
     }
 
@@ -106,7 +103,7 @@
         var childs = entry[2];
         if (props.required && !props.value) {
           this.invalid[name] = "This field is required";
-          Animation.shake(this.nodes[props.name]);
+          if (this.nodes[props.name]) Animation.shake(this.nodes[props.name]);
           valid = false;
         } else if (props.validate) {
           var field_error;
@@ -139,53 +136,27 @@
       return false;
     }
 
-    needsOwnerOverride() {
-      return !this.is_mine && this.is_site_owner;
-    }
-
-    promptOwnerKey(action_label, cb) {
-      var label = "Enter site private key to " + action_label + " " + (this.row_cert_user_id || "this user") + "'s entry:";
-      Page.cmd("wrapperPrompt", [label, "password"], (privatekey) => {
-        if (!privatekey) return;
-        cb(privatekey);
-      });
-    }
-
     handleSubmitClick() {
       if (!this.validate()) {
         return false;
       }
-      var done = (res) => {
+      this.saveRow((res) => {
         if (res === "ok") {
           this.hidden = true;
           Page.projector.scheduleRender();
         }
-      };
-      if (this.needsOwnerOverride()) {
-        this.promptOwnerKey("modify", (privatekey) => {
-          this.saveRow(done, privatekey);
-        });
-      } else {
-        this.saveRow(done);
-      }
+      });
       return false;
     }
 
     handleDeleteClick() {
-      var run = (privatekey) => {
+      Page.cmd("wrapperConfirm", ["Are you sure you want to delete this item?", "Delete"], () => {
         this.deleteRow((res) => {
           if (res === "ok") {
             this.hidden = true;
             Page.projector.scheduleRender();
           }
-        }, privatekey);
-      };
-      Page.cmd("wrapperConfirm", ["Are you sure you want to delete this item?", "Delete"], () => {
-        if (this.needsOwnerOverride()) {
-          this.promptOwnerKey("delete", run);
-        } else {
-          run();
-        }
+        });
       });
       return false;
     }
@@ -199,7 +170,11 @@
     }
 
     renderField(field) {
-      var props = field.props;
+      // Fresh vnode properties per render: maquette diffs previous vs current
+      // properties by reference, so mutating one persistent object makes every
+      // classes change (the invalid highlight) invisible to it.
+      var props = Object.assign({}, field.props);
+      props.classes = Object.assign({}, field.props.classes);
       props.value = this.data[field.id];
       props.name = field.id;
       var values = props.values;
@@ -224,13 +199,14 @@
 
     render(classname) {
       if (classname === undefined) classname = "";
-      var can_delete = this.deleteRow && (this.is_mine || this.is_site_owner);
-      var delete_label = this.needsOwnerOverride() ? "Delete (owner)" : "Delete";
-      return h("div.form-takeover-container#FormEdit", {afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
+      // Keyed by the form instance so swapping between different listings'
+      // forms recreates the tree (their event handlers differ, and maquette
+      // refuses handler updates on an existing node).
+      return h("div.form-takeover-container", {key: this, afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover" + classname, {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp},
           this.fields.map(this.renderField),
           h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancelClick}, "Cancel"),
-          can_delete ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, delete_label) : null,
+          this.deleteRow ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, "Delete") : null,
           h("a.button.button-submit", {href: "#Modify", onclick: this.handleSubmitClick}, "Modify")
         )
       ]);

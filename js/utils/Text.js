@@ -118,6 +118,17 @@
       }
     }
 
+    safeDecode(s) {
+      // decodeURIComponent throws URIError on malformed percent sequences
+      // (a hand-edited ?Search:100% link); fall back to the raw string
+      // instead of killing the app during boot routing.
+      try {
+        return decodeURIComponent(s);
+      } catch (err) {
+        return s;
+      }
+    }
+
     parseQuery(query) {
       var params = {};
       var parts = query.split('&');
@@ -126,9 +137,9 @@
         var key = kv[0];
         var val = kv[1];
         if (val) {
-          params[decodeURIComponent(key)] = decodeURIComponent(val);
+          params[this.safeDecode(key)] = this.safeDecode(val);
         } else {
-          params["url"] = decodeURIComponent(key);
+          params["url"] = this.safeDecode(key);
         }
       }
       return params;

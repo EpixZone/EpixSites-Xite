@@ -1,0 +1,131 @@
+/* Epix design system tokens (EpixNet/DESIGNPLAN.md): flat surfaces, thin
+   borders, one accent, Inter-first system stack, no gradients, no font
+   embeds (keeps the xite small for P2P transfer). */
+
+:root {
+  --bg: #F6F6F9;
+  --surface: #FEFEFE;
+  --surface2: #F2F2F6;
+  --border: #DCDCE3;
+  --border-strong: #ABABB5;
+  --text: #1D1D1F;
+  --muted: #72747B;
+  --accent: #8A4BDB;
+  --accent-soft: #F1EAFB;
+  --success: #1FA26C;
+  --success-soft: #E8F8F0;
+  --warning: #A87A08;
+  --warning-strong: #F0B622;
+  --warning-soft: #FCF6E3;
+  --danger: #E01243;
+  --danger-soft: #FDEDEC;
+  --info: #1D96A0;
+  --info-soft: #E7F8FA;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151517;
+    --surface: #1D1D1F;
+    --surface2: #242428;
+    --border: #2E2E32;
+    --border-strong: #404045;
+    --text: #F2F2F6;
+    --muted: #ABABB5;
+    --accent: #A87CE8;
+    --accent-soft: #2B2140;
+    --success: #3BDD97;
+    --success-soft: #10362A;
+    --warning: #F0B622;
+    --warning-strong: #F0B622;
+    --warning-soft: #3A3012;
+    --danger: #FF5A78;
+    --danger-soft: #3D1620;
+    --info: #4FD2DB;
+    --info-soft: #10333A;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Explicit wrapper theme override beats the system preference. */
+body.theme-light {
+  --bg: #F6F6F9; --surface: #FEFEFE; --surface2: #F2F2F6; --border: #DCDCE3;
+  --border-strong: #ABABB5; --text: #1D1D1F; --muted: #72747B;
+  --accent: #8A4BDB; --accent-soft: #F1EAFB;
+  --success: #1FA26C; --success-soft: #E8F8F0;
+  --warning: #A87A08; --warning-strong: #F0B622; --warning-soft: #FCF6E3;
+  --danger: #E01243; --danger-soft: #FDEDEC;
+  --info: #1D96A0; --info-soft: #E7F8FA;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+body.theme-dark {
+  --bg: #151517; --surface: #1D1D1F; --surface2: #242428; --border: #2E2E32;
+  --border-strong: #404045; --text: #F2F2F6; --muted: #ABABB5;
+  --accent: #A87CE8; --accent-soft: #2B2140;
+  --success: #3BDD97; --success-soft: #10362A;
+  --warning: #F0B622; --warning-strong: #F0B622; --warning-soft: #3A3012;
+  --danger: #FF5A78; --danger-soft: #3D1620;
+  --info: #4FD2DB; --info-soft: #10333A;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  height: 6000px; /* scroll placeholder until first paint settles */
+}
+body.loaded { height: auto; min-height: 100vh; }
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+h1, h2 { margin: 0; font-weight: 700; }
+
+.mono, .site-by, .toolbar-user {
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+#SiteLists { max-width: 1280px; margin: 0 auto; padding: 0 20px 80px; }
+
+.clear { clear: both; }
+
+h2.empty {
+  font-size: 15px; font-weight: 500; color: var(--muted);
+  text-align: center; padding: 48px 0;
+}
+
+.empty-state { text-align: center; padding: 72px 20px 96px; }
+.empty-state-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+.empty-state-text { font-size: 14px; color: var(--muted); max-width: 44ch; margin: 0 auto; }
+
+/* First-load skeleton */
+.site-card.skeleton { pointer-events: none; }
+.skeleton-line {
+  height: 12px; border-radius: 6px; background: var(--surface2);
+  margin: 10px 0; animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+.skeleton-line.w40 { width: 40%; }
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w90 { width: 90%; }
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
