@@ -1,37 +1,75 @@
 {
-  "files": {},
-  "ignore": ".*",
-  "modified": 1436226671.535,
-  "signs": {},
-  "user_contents": {
-    "cert_signers": {
-      "xid.epix": ["chain"]
+ "files": {},
+ "ignore": ".*",
+ "modified": 1436226671.535,
+ "signs": {},
+ "user_contents": {
+  "cert_signers": {
+   "xid.epix": [
+    "chain"
+   ]
+  },
+  "permission_rules": {
+   ".*": {
+    "files_allowed": "data.json",
+    "max_size": 200000,
+    "merge_files": {
+     "sites.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "stars.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "ratings.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "reports.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "claims.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     }
     },
-    "permission_rules": {
-      ".*": {
-        "files_allowed": "data.json",
-        "max_size": 200000,
-        "merge_files": {
-          "sites.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "stars.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "ratings.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "reports.json": {"class": "epix-orset-1", "max_size": 3000000}
-        },
-        "signers": ["mud.epix"]
-      }
+    "signers": [
+     "mud.epix"
+    ]
+   }
+  },
+  "permissions": {
+   ".*": {
+    "files_allowed": "data.json",
+    "max_size": 200000,
+    "merge_files": {
+     "sites.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "stars.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "ratings.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "reports.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "claims.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     }
     },
-    "permissions": {
-      ".*": {
-        "files_allowed": "data.json",
-        "max_size": 200000,
-        "merge_files": {
-          "sites.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "stars.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "ratings.json": {"class": "epix-orset-1", "max_size": 3000000},
-          "reports.json": {"class": "epix-orset-1", "max_size": 3000000}
-        },
-        "signers": ["mud.epix"]
-      }
-    }
+    "signers": [
+     "mud.epix"
+    ]
+   }
   }
+ }
 }

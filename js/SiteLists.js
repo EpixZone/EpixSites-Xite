@@ -13,6 +13,7 @@
       this.flagged_list = new ItemList(Site, "uri");
       this.rows = [];
       this.trust = {};
+      this.claims = {};
       this.flagged_count = 0;
       this.need_update = false;
       this.loaded = false;
@@ -67,11 +68,16 @@
     // rows, so search and browse stay consistent with the trust states.
     update() {
       var results = {};
-      var pending = 4;
+      var pending = 5;
       var done = () => {
         pending--;
         if (pending > 0) return;
-        this.applyResults(results);
+        // Ownership claims carry a signature by the claimed xite's own key.
+        // Verifying is a websocket round trip, so it happens once per
+        // signature here, before the deterministic pass consumes the result.
+        Claim.verifyAll(results.claims || [], () => {
+          this.applyResults(results);
+        });
       };
 
       this.logStart("Sites");
@@ -96,6 +102,14 @@
         results.stars = res;
         done();
       });
+      // claimant_dir comes from the directory the record LIVES in, never from
+      // a field inside it: that is what binds an owner's signature to one
+      // identity and stops a valid claim being copied and edited elsewhere.
+      Page.cmd("dbQuery", "SELECT site_claim.*, json.directory AS claimant_dir " +
+        "FROM site_claim LEFT JOIN json USING (json_id)", (res) => {
+        results.claims = res;
+        done();
+      });
     }
 
     applyResults(results) {
@@ -105,11 +119,18 @@
       var seen_uri = {};
       var raw = results.sites || [];
       var now = Time.timestamp();
+      // Verified ownership claims, by claimed address.
+      this.claims = Claim.resolve(results.claims || []);
       for (var i = 0; i < raw.length; i++) {
         var row = raw[i];
         row.uri = row.directory + "_" + row.site_id;
         if (seen_uri[row.uri]) continue;
         seen_uri[row.uri] = true;
+        // The owner's description wins over the submitter's, but the listing
+        // keeps its original identity so its votes, reports and stars carry
+        // over: claiming a xite must never reset what the community said.
+        var claim = this.claims[("" + row.address).toLowerCase()];
+        if (claim) Claim.apply(row, claim);
         // A date beyond plausible clock skew is untrusted: clamping it forward
         // would keep it at the top of New forever, so sort it to the bottom.
         row.date_sort = row.date_added > now + 120 ? 0 : row.date_added;
