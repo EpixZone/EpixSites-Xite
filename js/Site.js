@@ -353,7 +353,10 @@
 
       var star_count = info ? info.star_count : (this.row.star || 0);
 
-      return h("div.site-card", {key: uri, enterAnimation: Animation.slideDown, exitAnimation: Animation.slideUp,
+      // No enter/exit animations on cards: a tab switch replaces most of the
+      // visible set, and a hundred concurrent height animations (each forcing
+      // reflows) is what made view changes feel slow at directory scale.
+      return h("div.site-card", {key: uri,
         classes: {mine: this.isMine(), starred: starred, blur: blur, "state-warned": state === "warned", "state-delisted": state === "delisted", "state-mislabeled": state === "mislabeled"}}, [
         h("div.site-head", [
           h("a.site-title", {href: "/" + this.row.address, onclick: this.handleOpenClick, title: this.row.address}, this.row.title),
