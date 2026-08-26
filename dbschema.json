@@ -13,6 +13,16 @@
             "file_name": "data.json",
             "fold_crdt": "post"
         },
+        ".+/ratings.json": {
+            "to_table": [ {"node": "post", "table": "site_rating"} ],
+            "file_name": "data.json",
+            "fold_crdt": "post"
+        },
+        ".+/reports.json": {
+            "to_table": [ {"node": "post", "table": "site_report"} ],
+            "file_name": "data.json",
+            "fold_crdt": "post"
+        },
         ".+/content.json": {
             "to_json_table": [ "cert_user_id" ],
             "file_name": "data.json"
@@ -24,21 +34,26 @@
         }
 
 	},
+	"feeds": {
+		"Sites": "SELECT title AS title, description AS body, 'site' AS type, date_added, '/' || address AS url FROM site LEFT JOIN json USING (json_id)"
+	},
 	"tables": {
 		"site": {
 			"cols": [
 				["site_id", "INTEGER"],
 				["category", "INTEGER"],
+				["subcat", "TEXT"],
 				["language", "TEXT"],
 				["title", "TEXT"],
 				["description", "TEXT"],
 				["address", "TEXT"],
 				["tags", "TEXT"],
+				["rating", "TEXT"],
 				["date_added", "DATETIME"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX site_key ON site(json_id, date_added)", "CREATE INDEX site_category ON site(category)"],
-			"schema_changed": 10
+			"schema_changed": 11
 		},
 		"site_stat": {
 			"cols": [
@@ -48,7 +63,7 @@
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes":["CREATE INDEX site_stat_key ON site_stat(json_id)", "CREATE UNIQUE INDEX site_stat_uri ON site_stat(site_uri)"],
-			"schema_changed": 10
+			"schema_changed": 11
 		},
 		"site_star": {
 			"cols": [
@@ -57,7 +72,31 @@
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes":["CREATE INDEX site_star_key ON site_star(json_id)"],
-			"schema_changed": 10
+			"schema_changed": 11
+		},
+		"site_rating": {
+			"cols": [
+				["target_dir", "TEXT"],
+				["target_site_id", "INTEGER"],
+				["label", "TEXT"],
+				["date_added", "DATETIME"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX site_rating_key ON site_rating(json_id, target_dir, target_site_id)", "CREATE INDEX site_rating_target ON site_rating(target_dir, target_site_id)"],
+			"schema_changed": 11
+		},
+		"site_report": {
+			"cols": [
+				["kind", "TEXT"],
+				["target_dir", "TEXT"],
+				["target_site_id", "INTEGER"],
+				["reason", "TEXT"],
+				["note", "TEXT"],
+				["date_added", "DATETIME"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX site_report_key ON site_report(json_id, kind, target_dir, target_site_id)", "CREATE INDEX site_report_target ON site_report(target_dir, target_site_id)"],
+			"schema_changed": 11
 		},
         "json": {
             "cols": [
@@ -67,7 +106,7 @@
                 ["cert_user_id", "TEXT"]
             ],
             "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 10
+            "schema_changed": 11
         }
 	}
 }

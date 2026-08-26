@@ -14,6 +14,9 @@
       this.on_local_storage = new Deferred();
       this.on_loaded = new Deferred();
 
+      this.sync_visible = false;
+      this.sync_hide_timer = null;
+
       this.user = new User();
       this.on_site_info.then(() => {
         this.user.setAuthAddress(this.site_info.auth_address);
@@ -22,9 +25,12 @@
       this.local_storage = null;
       this.languages = [];
       this.categories = [];
+      this.subcats = {};
       this.on_site_info.then(() => {
-        this.languages = this.site_info.content.settings.languages;
-        this.categories = this.site_info.content.settings.categories;
+        var settings = this.site_info.content.settings;
+        this.languages = settings.languages;
+        this.categories = settings.categories;
+        this.subcats = settings.subcats || {};
       });
 
       this.handleLinkClick = this.handleLinkClick.bind(this);
@@ -68,17 +74,34 @@
 
     route(query) {
       this.params = Text.parseQuery(query);
-      var parts = this.params.url.split(":");
+      var parts = ("" + (this.params.url || "")).split(":");
       var page = parts[0];
-      var param = parts[1];
+      var param = parts.slice(1).join(":");
       this.content = this.site_lists;
       if (page === "Category") {
         this.site_lists.setFilterCategory(parseInt(param));
+        this.clearSearch();
+        if (this.head.active === "flagged") this.head.active = "popular";
+      } else if (page === "Search") {
+        this.site_lists.setFilterCategory(null);
+        this.head.search_text = param;
+        this.site_lists.setSearch(param);
+      } else if (page === "Flagged") {
+        this.site_lists.setFilterCategory(null);
+        this.head.active = "flagged";
       } else {
         this.site_lists.setFilterCategory(null);
+        this.clearSearch();
       }
       Page.projector.scheduleRender();
       this.log("Route", page, param);
+    }
+
+    clearSearch() {
+      if (this.head.search_text) {
+        this.head.search_text = "";
+        this.site_lists.setSearch("");
+      }
     }
 
     setUrl(url, mode) {
@@ -200,9 +223,34 @@
       }
     }
 
+    // First-load sync affordance. Show while the node is still pulling files,
+    // hide only after the busy signal stays quiet for a beat: transient
+    // tasks-zero events replayed through a stale RateLimit (the DeFlix
+    // loading-bar flicker) must not blink the bar.
+    updateSyncState(site_info) {
+      var busy = (site_info.tasks || 0) > 0 || (site_info.bad_files || 0) > 0;
+      if (busy) {
+        if (this.sync_hide_timer) {
+          clearTimeout(this.sync_hide_timer);
+          this.sync_hide_timer = null;
+        }
+        if (!this.sync_visible) {
+          this.sync_visible = true;
+          this.projector.scheduleRender();
+        }
+      } else if (this.sync_visible && !this.sync_hide_timer) {
+        this.sync_hide_timer = setTimeout(() => {
+          this.sync_hide_timer = null;
+          this.sync_visible = false;
+          this.projector.scheduleRender();
+        }, 800);
+      }
+    }
+
     setSiteInfo(site_info) {
       this.site_info = site_info;
       this.on_site_info.resolve();
+      this.updateSyncState(site_info);
       this.site_lists.onSiteInfo(site_info);
       this.user.onSiteInfo(site_info);
       this.projector.scheduleRender();

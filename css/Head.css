@@ -1,19 +1,106 @@
-#Head { margin: 0px 20px }
-#Head h1 {
-	font-size: 300%; color: #EE1865; margin-top: 20px; display: inline-block; font-weight: 100; vertical-align: 12px; margin-bottom: 10px;
-	background: -webkit-linear-gradient(left, #EB0080, #EF193E 70%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-#Head h2 {
-	font-size: 14px; padding-left: 138px; font-weight: lighter; color: #AAA; width: 280px; margin: 0px auto; text-align: left; margin-top: -41px; letter-spacing: 0.5px;
-}
-#Head .logo { display: inline-block; margin-right: 20px; margin-left: 25px; }
+/* Header: sync bar, logo, search, safe toggle, tabs. The top-right corner
+   stays clear for the wrapper's floating fixbutton (48px circle). */
 
-#Head .order { margin-top: 35px; display: inline-block; vertical-align: top; white-space: nowrap; margin-top: 35px; }
-#Head .order-item {
-	border-radius: 101px; display: inline-block; margin-right: 5px; color: #333; transition: all 0.3s;
-	padding: 11px 21px; display: inline-block; text-transform: uppercase; text-decoration: none; letter-spacing: 2px; font-weight: lighter; font-size: 13px;
+.syncbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent-soft); opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease-out; z-index: 100; overflow: hidden;
 }
-#Head .order-item:hover { transition: none; color: #ee0a73 }
-#Head .order-item:focus { transition: all 0.3s }
-#Head .order-item.active { background-color: #ee0a73; color: white; box-shadow: 0px 3px 14px -2px #ff6db0 }
-#Head .order-item.new.active { background-color: #2ECC71;; color: white; box-shadow: 0px 3px 14px -2px #2ECC71 }
+.syncbar.visible { opacity: 1; }
+.syncbar-fill {
+  position: absolute; top: 0; bottom: 0; width: 30%;
+  background: var(--accent); border-radius: 2px;
+  animation: syncbar-slide 1.2s ease-in-out infinite;
+}
+@keyframes syncbar-slide {
+  0% { left: -30%; }
+  100% { left: 100%; }
+}
+
+#Head {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.head-inner {
+  display: flex; align-items: center; gap: 16px;
+  max-width: 1280px; margin: 0 auto;
+  padding: 14px 76px 10px 20px; /* right padding clears the fixbutton */
+}
+
+.logo { display: flex; align-items: center; gap: 10px; flex: none; }
+.logo img { display: block; }
+.logo h1 { font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
+.logo:hover h1 { color: var(--accent); }
+
+.searchbox {
+  position: relative; flex: 1; max-width: 560px;
+  display: flex; align-items: center;
+}
+.searchbox-icon {
+  position: absolute; left: 14px; width: 9px; height: 9px;
+  border: 2px solid var(--muted); border-radius: 50%; pointer-events: none;
+}
+.searchbox-icon::after {
+  content: ""; position: absolute; left: 8px; top: 8px;
+  width: 6px; height: 2px; background: var(--muted);
+  border-radius: 2px; transform: rotate(45deg); transform-origin: 0 0;
+}
+.searchbox-input {
+  width: 100%; height: 38px; padding: 0 36px 0 36px;
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+  outline: none; -webkit-appearance: none; appearance: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.searchbox-input::placeholder { color: var(--muted); }
+.searchbox-input::-webkit-search-cancel-button { display: none; }
+.searchbox-input:focus {
+  background: var(--surface); border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.searchbox-clear {
+  position: absolute; right: 6px; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--muted); border-radius: 50%;
+}
+.searchbox-clear:hover { background: var(--surface2); color: var(--text); }
+
+.safe-toggle {
+  flex: none; display: flex; align-items: center; gap: 7px;
+  height: 32px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--border); color: var(--muted);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  transition: all 0.15s;
+}
+.safe-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong); }
+.safe-toggle.on { border-color: var(--success); color: var(--success); background: var(--success-soft); }
+.safe-toggle.on .safe-dot { background: var(--success); }
+.safe-toggle:hover { border-color: var(--border-strong); }
+.safe-toggle.on:hover { border-color: var(--success); }
+
+.head-tabs {
+  display: flex; align-items: center; gap: 4px;
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 20px 10px;
+}
+.tab {
+  padding: 7px 14px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+.tab:hover { background: var(--surface2); color: var(--text); }
+.tab.active { background: var(--accent-soft); color: var(--accent); }
+.tab-badge {
+  display: inline-block; margin-left: 6px; padding: 1px 7px;
+  background: var(--danger); color: #FEFEFE;
+  border-radius: 999px; font-size: 10px; font-weight: 700; vertical-align: 1px;
+}
+.syncnote { margin-left: auto; font-size: 12px; color: var(--muted); font-style: italic; }
+
+@media (max-width: 719px) {
+  .head-inner { flex-wrap: wrap; padding-right: 68px; }
+  .searchbox { order: 3; flex-basis: 100%; max-width: none; }
+  .safe-toggle { margin-left: auto; }
+}

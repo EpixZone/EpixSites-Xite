@@ -21,8 +21,17 @@
      "stars.json": {
       "class": "epix-orset-1",
       "max_size": 3000000
+     },
+     "ratings.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "reports.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
      }
-    }
+    },
+    "signers": ["mud.epix"]
    }
   },
   "permissions": {}

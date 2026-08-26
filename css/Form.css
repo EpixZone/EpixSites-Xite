@@ -1,32 +1,86 @@
+/* Forms: the submit panel, the edit takeover, buttons, radio pill groups. */
+
+.button {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; padding: 0 20px; border-radius: 999px;
+  background: var(--accent); color: #FEFEFE;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+  border: 1px solid var(--accent);
+  transition: opacity 0.15s, transform 0.1s;
+  position: relative;
+}
+.button:hover { opacity: 0.9; }
+.button:active { transform: translateY(1px); }
+.button.button-small { height: 32px; padding: 0 16px; font-size: 12.5px; }
+.button.button-outline { background: transparent; color: var(--danger); border-color: var(--danger); }
+.button.button-outline:hover { background: var(--danger-soft); opacity: 1; }
+.button.loading { color: rgba(0, 0, 0, 0); pointer-events: none; }
+.button.loading::after {
+  content: ""; position: absolute; width: 16px; height: 16px;
+  border: 2px solid rgba(254, 254, 254, 0.35); border-top-color: #FEFEFE;
+  border-radius: 50%; animation: button-spin 0.7s linear infinite;
+}
+@keyframes button-spin { to { transform: rotate(360deg); } }
+
+.toolbar-submit.active { background: var(--text); border-color: var(--text); }
+
+.form-siteadd {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; margin-bottom: 24px; max-width: 760px;
+  display: flex; flex-direction: column; gap: 14px;
+  overflow: hidden;
+}
+.form-siteadd.hidden { display: none; }
+.form-siteadd-title { font-size: 16px; font-weight: 700; }
+.form-siteadd-note { font-size: 12.5px; color: var(--muted); margin-top: -8px; }
+.form-siteadd-actions { display: flex; align-items: center; gap: 16px; justify-content: flex-end; }
+
+.formfield { display: flex; flex-direction: column; gap: 6px; }
+.formfield label.title {
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--muted);
+}
+.field-note { font-size: 12px; color: var(--muted); }
+
+input.text {
+  height: 38px; padding: 0 12px; font: inherit; font-size: 14px;
+  color: var(--text); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 4px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input.text::placeholder { color: var(--muted); }
+input.text:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: var(--surface); }
+input.text.invalid { border-color: var(--danger); }
+
+.invalid-reason { font-size: 12px; color: var(--danger); padding-top: 2px; }
+
+.radiogroup { display: flex; flex-wrap: wrap; gap: 6px; }
+.radiogroup .radio {
+  padding: 5px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 500;
+  border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.12s;
+}
+.radiogroup .radio:hover { border-color: var(--border-strong); color: var(--text); }
+.radiogroup .radio.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.radiogroup.invalid .radio { border-color: var(--danger); }
+.radiogroup-lang .radio { padding: 5px 10px; text-transform: uppercase; font-size: 11px; }
+.radiogroup-rating { flex-direction: column; align-items: flex-start; }
+
+.cancel.link { font-size: 13px; color: var(--muted); }
+.cancel.link:hover { color: var(--text); text-decoration: underline; }
+
+/* Edit takeover */
 .form-takeover-container {
-	width: 100%; height: 100%; position: fixed; background-color: rgba(84,84,84,0.5); z-index: 999; top: 0px
-	background: linear-gradient(35deg, rgb(212, 212, 212), rgba(0, 0, 255, 0.35)); transition: all 0.3s;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(2, 2, 2, 0.45);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 8vh 20px 20px; overflow-y: auto;
 }
-.form-takeover-container.hidden { opacity: 0; pointer-events: none }
-
-.form.form-takeover {
-	text-align: right; max-width: 700px; width: 90%; margin-left: auto; margin-right: auto; background-color: white; padding: 30px; padding-top: 5px; box-sizing: border-box;
-	box-shadow: 0px 0px 100px -20px rgba(0,0,0,0.5); position: relative;
+.form-takeover-container.hidden { display: none; }
+.form-takeover {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  padding: 22px; width: 100%; max-width: 640px;
+  display: flex; flex-direction: column; gap: 14px;
 }
-
-.form .formfield .title {
-	font-size: 13px; text-align: right; margin-top: 40px; text-transform: uppercase; letter-spacing: 2px; display: block;
-	margin-left: 0px; margin-bottom: -31px; width: 17%; margin-right: 10px; box-sizing: border-box; color: #999;
-}
-.form .formfield .title.invalid { color: #ee0a73; transition: all 0.3s }
-.form .formfield input.text { font-size: 16px; padding: 10px; width: 80%; font-weight: lighter; font-family: Roboto; border: 1px solid #DDD; margin-right: 0px; box-sizing: border-box; left: 20px; transition: all 0.3s }
-.form .formfield input.text:focus { border: 1px solid #AF3BFF; outline: none; transition: none }
-.form .formfield .radiogroup { min-height: 30px; width: 80%; margin-left: auto; text-align: left }
-.form .formfield .radiogroup-lang { text-transform: uppercase; }
-.form .formfield .radiogroup + .invalid-reason { margin-top: -29px; }
-.form .formfield .radio {
-	text-decoration: none; color: #333; padding: 9px; display: inline-block; border: 1px solid #EEE;
-	min-width: 49.7px; text-align: center; font-size: 14px; margin-top: 5px; transition: all 0.3s
-}
-.form .formfield .radio.active { background-color: #AF3BFF; color: white }
-.form .formfield .radio:hover { border: 1px solid #AF3BFF; transition: none }
-
-.form input.text.invalid { border: 1px solid #ee0a73 }
-.form .invalid-reason { position: absolute; margin-right: 30px; display: inline-block; right: 0px; padding: 3px 9px; background-color: #ee0a73; font-size: 13px; color: white; z-index: 999; pointer-events: none }
-.form .cancel { text-decoration: none; color: #AAA; font-weight: bold; font-size: 12px; text-transform: uppercase;}
-.form .cancel:hover { text-decoration: underline }
+.form-takeover .cancel { margin-right: auto; }
