@@ -22,7 +22,8 @@
 .actions-menu { font-weight: 500; }
 
 /* Language filter panel inside the menu */
-.menu-radio { padding: 8px 10px; font-size: 12.5px; color: var(--muted); max-width: 340px; }
+.menu.filter { width: 360px; }
+.menu-radio { padding: 8px 10px; font-size: 12.5px; color: var(--muted); }
 .menu-radio > div { margin-bottom: 8px; font-weight: 600; }
 .menu-radio a {
   display: inline-block; margin: 0 4px 6px 0; padding: 3px 9px;
