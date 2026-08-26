@@ -65,7 +65,7 @@
       return false;
     }
 
-    renderItem(item) {
+    renderItem(item, i) {
       var title = item[0];
       var cb = item[1];
       var selected = item[2];
@@ -73,7 +73,9 @@
         selected = selected();
       }
       if (title === "---") {
-        return h("div.menu-item-separator");
+        // Keyed: two unkeyed same-selector siblings make maquette throw when
+        // the item set changes on an already-created menu.
+        return h("div.menu-item-separator", {key: "sep-" + i});
       } else {
         var href, onclick, key;
         if (typeof cb === "string") {

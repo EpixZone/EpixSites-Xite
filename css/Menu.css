@@ -16,7 +16,7 @@
 }
 .menu-item:hover { background: var(--surface2); }
 .menu-item.selected { color: var(--accent); font-weight: 600; }
-.menu-item.noaction { color: var(--muted); pointer-events: none; }
+.menu-item.noaction { color: var(--muted); cursor: default; }
 .menu-item-separator { height: 1px; background: var(--border); margin: 6px 4px; }
 
 .actions-menu { font-weight: 500; }

@@ -22,7 +22,7 @@
 }
 @keyframes button-spin { to { transform: rotate(360deg); } }
 
-.toolbar-submit.active { background: var(--text); border-color: var(--text); }
+.toolbar-submit.active { background: var(--text); border-color: var(--text); color: var(--bg); }
 
 .form-siteadd {
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;

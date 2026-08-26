@@ -52,7 +52,7 @@
 				["date_added", "DATETIME"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
-			"indexes": ["CREATE UNIQUE INDEX site_key ON site(json_id, date_added)", "CREATE INDEX site_category ON site(category)"],
+			"indexes": ["CREATE UNIQUE INDEX site_key ON site(json_id, site_id)", "CREATE INDEX site_category ON site(category)"],
 			"schema_changed": 11
 		},
 		"site_stat": {
@@ -71,7 +71,7 @@
 				["value", "INTEGER"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
-			"indexes":["CREATE INDEX site_star_key ON site_star(json_id)"],
+			"indexes":["CREATE UNIQUE INDEX site_star_key ON site_star(json_id, site_uri)"],
 			"schema_changed": 11
 		},
 		"site_rating": {

@@ -99,16 +99,23 @@
     }
 
     applyResults(results) {
-      var rows = results.sites || [];
-      this.trust = Trust.compute(rows, results.ratings || [], results.reports || [], results.stars || []);
-
+      // Dedup by uri: identity everywhere is directory_site_id, and a crafted
+      // sites.json can fold two live rows onto one uri.
+      var rows = [];
+      var seen_uri = {};
+      var raw = results.sites || [];
       var now = Time.timestamp();
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
+      for (var i = 0; i < raw.length; i++) {
+        var row = raw[i];
         row.uri = row.directory + "_" + row.site_id;
-        // Clamp client-set timestamps so a future date cannot pin the New tab.
-        row.date_sort = Math.min(row.date_added, now + 120);
+        if (seen_uri[row.uri]) continue;
+        seen_uri[row.uri] = true;
+        // A date beyond plausible clock skew is untrusted: clamping it forward
+        // would keep it at the top of New forever, so sort it to the bottom.
+        row.date_sort = row.date_added > now + 120 ? 0 : row.date_added;
+        rows.push(row);
       }
+      this.trust = Trust.compute(rows, results.ratings || [], results.reports || [], results.stars || []);
       this.rows = rows;
       this.distribute();
 
@@ -182,7 +189,8 @@
           if (info.state === "delisted") delisted_count++;
         }
       }
-      this.flagged_count = delisted_count;
+      this.flagged_count = flagged.length;
+      this.delisted_count = delisted_count;
       this.flagged_list.sync(this.orderRows(flagged));
     }
 

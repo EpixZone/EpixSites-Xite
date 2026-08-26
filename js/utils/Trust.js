@@ -154,11 +154,17 @@
         }
       }
 
+      var star_seen = {};
       for (i = 0; i < stars.length; i++) {
         var star = stars[i];
         var sinfo = byUri[star.site_uri];
         if (!sinfo) continue;
         if (star.starrer === sinfo.row.directory) continue;
+        // One star per (starrer, listing): a crafted stars.json can hold many
+        // records with distinct keys but the same site_uri.
+        var star_key = star.starrer + "|" + star.site_uri;
+        if (star_seen[star_key]) continue;
+        star_seen[star_key] = true;
         sinfo.star_count++;
         sinfo.star_w += weightOf(star.starrer);
       }
@@ -182,8 +188,7 @@
         }
         info.settled = external_w >= conf.settle_weight;
 
-        var reporter_count = 0;
-        for (var author in info.harmful_reporters) reporter_count++;
+        var reporter_count = Object.keys(info.harmful_reporters).length;
 
         if (info.net >= conf.delist_net && reporter_count >= conf.delist_min_reporters) {
           info.state = "delisted";

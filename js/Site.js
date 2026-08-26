@@ -33,9 +33,10 @@
 
     isNew() {
       var now = Time.timestamp();
-      // Clamp client-set timestamps so a future date cannot pin "New" forever.
-      var added = Math.min(this.row.date_added, now + 120);
-      return now - added < 60 * 60 * 24;
+      // A client-set timestamp beyond plausible clock skew is untrusted:
+      // clamping it forward would keep the chip (and the New tab lead) forever.
+      if (this.row.date_added > now + 120) return false;
+      return now - this.row.date_added < 60 * 60 * 24;
     }
 
     isMine() {
@@ -74,18 +75,36 @@
     }
 
     handleRateClick(e) {
+      // Capture the label NOW: after the cert dialog the event is dead
+      // (currentTarget is nulled once dispatch completes).
       var label = e.currentTarget.attributes["data-label"].value;
-      if (!this.requireCert(() => { this.handleRateClick(e); })) return false;
+      return this.rateLabel(label);
+    }
+
+    rateLabel(label) {
+      if (!this.requireCert(() => { this.rateLabel(label); })) return false;
       var uri = this.getUri();
       if (this.isMine()) {
         Page.cmd("wrapperNotification", ["info", "Your submission's declared rating is already your vote. Edit the listing to change it."]);
         return false;
       }
-      var next = Page.user.my_ratings[uri] === label ? null : label;
-      Page.user.my_ratings[uri] = next;  // optimistic
-      if (next == null) delete Page.user.my_ratings[uri];
+      var prev = Page.user.my_ratings[uri];
+      var next = prev === label ? null : label;
+      if (next == null) {  // optimistic
+        delete Page.user.my_ratings[uri];
+      } else {
+        Page.user.my_ratings[uri] = next;
+      }
       Page.projector.scheduleRender();
-      Page.user.rate(this.row.directory, this.row.site_id, next, () => {
+      Page.user.rate(this.row.directory, this.row.site_id, next, (res) => {
+        if (res !== "ok") {
+          if (prev == null) {  // revert the optimistic toggle
+            delete Page.user.my_ratings[uri];
+          } else {
+            Page.user.my_ratings[uri] = prev;
+          }
+          Page.projector.scheduleRender();
+        }
         Page.site_lists.update();
       });
       return false;
@@ -212,17 +231,21 @@
     saveRow(cb) {
       // An edit is a new signed version of the same site record (same key ->
       // same post_id -> supersedes); it can never touch another submission.
+      // Fields come from the form's own data copy, never from this.row: a
+      // background update can swap this.row for a fresh DB object mid-edit,
+      // which would silently publish pre-edit values.
+      var data = this.form_edit ? this.form_edit.data : this.row;
       Page.user.editRecord("sites", "site_" + this.row.site_id, {
         "site_id": this.row.site_id,
         "date_added": this.row.date_added,
-        "category": parseInt(this.row.category),
-        "subcat": this.row.subcat,
-        "language": this.row.language,
-        "title": this.row.title,
-        "description": this.row.description,
-        "address": this.row.address,
-        "tags": this.row.tags,
-        "rating": this.row.rating
+        "category": parseInt(data.category),
+        "subcat": data.subcat,
+        "language": data.language,
+        "title": data.title,
+        "description": data.description,
+        "address": data.address,
+        "tags": data.tags,
+        "rating": data.rating
       }, false, (res) => {
         Page.site_lists.update();
         if (typeof cb === "function") cb(res);
@@ -251,7 +274,7 @@
         this.form_edit.addField("text", "tags", "Tags", {placeholder: "up to 5, comma separated", required: false});
       }
       if (!this.row.rating) this.row.rating = "g";
-      this.form_edit.setData(this.row);
+      this.form_edit.setData(Object.assign({}, this.row));
       this.form_edit.saveRow = this.saveRow;
       this.form_edit.deleteRow = this.deleteRow;
       Page.setFormEdit(this.form_edit);
@@ -326,7 +349,7 @@
       var starred = Page.user.starred[uri];
       var untrusted_submitter = info ? info.submitter_w <= 0 : false;
       var state = info ? info.state : "unverified";
-      var blur = Page.site_lists.safe_mode && state === "warned";
+      var blur = Page.site_lists.safe_mode && (state === "warned" || state === "delisted");
 
       var star_count = info ? info.star_count : (this.row.star || 0);
 

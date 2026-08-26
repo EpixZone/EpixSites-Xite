@@ -40,6 +40,7 @@
       this.projector = maquette.createProjector();
       this.head = new Head();
       this.site_lists = new SiteLists();
+      this.form_edit = null;
 
       if (base.href.indexOf("?") === -1) {
         this.route("");
@@ -49,16 +50,16 @@
         this.history_state["url"] = url;
       }
 
-      // Remove fake long body
-      this.on_loaded.then(() => {
-        this.log("onloaded");
-        window.requestAnimationFrame(function() {
-          document.body.className = "loaded";
-        });
-      });
+      this.armLoaded();
 
       this.projector.replace($("#Head"), this.head.render);
       this.projector.replace($("#SiteLists"), this.site_lists.render);
+      // One stable FormEdit projection; forms are swapped through
+      // this.form_edit. Calling projector.replace per open would leak a
+      // projection (maquette never drops replaced ones).
+      this.projector.replace($("#FormEdit"), () => {
+        return h("div#FormEdit", [this.form_edit ? this.form_edit.render() : null]);
+      });
       this.loadLocalStorage();
 
       // Update every minute to keep time since fields up-to date
@@ -67,9 +68,22 @@
       }, 60 * 1000);
     }
 
+    // Remove the fake long body once the current view has loaded. Deferred
+    // callbacks are one-shot (resolve() clears the list), so every navigation
+    // that resets on_loaded.resolved must re-arm this.
+    armLoaded() {
+      this.on_loaded.then(() => {
+        this.log("onloaded");
+        window.requestAnimationFrame(function() {
+          document.body.classList.add("loaded");
+        });
+      });
+    }
+
     setFormEdit(form_edit) {
       form_edit.hidden = false;
-      this.projector.replace($("#FormEdit"), form_edit.render);
+      this.form_edit = form_edit;
+      this.projector.scheduleRender();
     }
 
     route(query) {
@@ -84,6 +98,7 @@
         if (this.head.active === "flagged") this.head.active = "popular";
       } else if (page === "Search") {
         this.site_lists.setFilterCategory(null);
+        if (this.head.active === "flagged") this.head.active = "popular";
         this.head.search_text = param;
         this.site_lists.setSearch(param);
       } else if (page === "Flagged") {
@@ -92,6 +107,7 @@
       } else {
         this.site_lists.setFilterCategory(null);
         this.clearSearch();
+        if (this.head.active === "flagged") this.head.active = "popular";
       }
       Page.projector.scheduleRender();
       this.log("Route", page, param);
@@ -130,14 +146,17 @@
         this.history_state["scrollTop"] = window.pageYOffset;
         this.cmd("wrapperReplaceState", [this.history_state, null]);
 
-        if (document.body.scrollTop > 100) {
-          anime({targets: document.body, scrollTop: 0, easing: "easeOutCubic", duration: 300});
+        if (window.pageYOffset > 100) {
+          // document.body never scrolls in standards mode; the viewport
+          // scroller is documentElement.
+          anime({targets: document.scrollingElement || document.documentElement, scrollTop: 0, easing: "easeOutCubic", duration: 300});
         }
 
         this.history_state["scrollTop"] = 0;
 
         this.on_loaded.resolved = false;
-        document.body.className = "";
+        document.body.classList.remove("loaded");
+        this.armLoaded();
 
         this.setUrl(e.currentTarget.search);
         return false;
@@ -214,7 +233,8 @@
             params.state.url = params.href.replace(/.*\?/, "");
           }
           this.on_loaded.resolved = false;
-          document.body.className = "";
+          document.body.classList.remove("loaded");
+          this.armLoaded();
           window.scroll(window.pageXOffset, params.state.scrollTop || 0);
           this.route(params.state.url || "");
         }

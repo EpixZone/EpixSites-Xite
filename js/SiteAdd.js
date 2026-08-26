@@ -31,7 +31,7 @@
     parseAddress(value) {
       var match = (value || "").match(/(epix1[a-z0-9]{38,}|[A-Za-z0-9\.-]{2,99}\.[a-z]+)(.*)/);
       if (!match) return null;
-      return match[0].replace(/\/.*/, "");
+      return match[1];  // the address group only, never the trailing rest
     }
 
     normalizeTags(value) {
@@ -65,7 +65,9 @@
       // rating is a REQUIRED, public claim: if the community later settles a
       // stricter label, the listing shows as Mislabeled.
       var date_added = Time.timestamp();
-      var site_id = date_added;
+      // Millisecond id: two same-second submissions must not share a key
+      // (same key = same keyed post_id = silent supersede).
+      var site_id = Date.now();
       var fields = {
         "site_id": site_id,
         "date_added": date_added,

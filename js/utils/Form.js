@@ -103,7 +103,7 @@
         var childs = entry[2];
         if (props.required && !props.value) {
           this.invalid[name] = "This field is required";
-          Animation.shake(this.nodes[props.name]);
+          if (this.nodes[props.name]) Animation.shake(this.nodes[props.name]);
           valid = false;
         } else if (props.validate) {
           var field_error;
@@ -170,7 +170,11 @@
     }
 
     renderField(field) {
-      var props = field.props;
+      // Fresh vnode properties per render: maquette diffs previous vs current
+      // properties by reference, so mutating one persistent object makes every
+      // classes change (the invalid highlight) invisible to it.
+      var props = Object.assign({}, field.props);
+      props.classes = Object.assign({}, field.props.classes);
       props.value = this.data[field.id];
       props.name = field.id;
       var values = props.values;
@@ -195,7 +199,10 @@
 
     render(classname) {
       if (classname === undefined) classname = "";
-      return h("div.form-takeover-container#FormEdit", {afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
+      // Keyed by the form instance so swapping between different listings'
+      // forms recreates the tree (their event handlers differ, and maquette
+      // refuses handler updates on an existing node).
+      return h("div.form-takeover-container", {key: this, afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover" + classname, {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp},
           this.fields.map(this.renderField),
           h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancelClick}, "Cancel"),

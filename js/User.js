@@ -300,6 +300,12 @@
           if (typeof cb === "function") cb({"error": "Record not found"});
           return;
         }
+        if (orig.post_id == null) {
+          // Without the original post_id the node would derive a keyed id from
+          // the MODERATOR's author: a silent no-op tombstone.
+          if (typeof cb === "function") cb({"error": "Record has no post_id yet, try again after it syncs"});
+          return;
+        }
         var record = {
           "post_id": orig.post_id,
           "key": orig.key,

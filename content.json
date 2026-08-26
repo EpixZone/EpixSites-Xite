@@ -271,14 +271,14 @@
  },
  "feeds": {
   "listings": {
-   "clock_unit": "s",
+   "clock_unit": "ms",
    "files": "data/users/*/sites.json",
    "kind": {
     "default": "site"
    },
    "map": {
     "author": "author",
-    "clock": "date_added",
+    "clock": "clock",
     "id": "post_id",
     "target": null
    },
