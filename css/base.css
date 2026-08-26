@@ -104,6 +104,10 @@ h2.empty {
   text-align: center; padding: 48px 0;
 }
 
+.empty-state { text-align: center; padding: 72px 20px 96px; }
+.empty-state-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+.empty-state-text { font-size: 14px; color: var(--muted); max-width: 44ch; margin: 0 auto; }
+
 /* First-load skeleton */
 .site-card.skeleton { pointer-events: none; }
 .skeleton-line {

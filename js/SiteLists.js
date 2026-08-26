@@ -406,12 +406,28 @@
       } else if (mode === "search") {
         body = this.renderSearch();
       } else {
-        body = h("div.sitelists", this.site_lists.map(function(site_list) {
-          if (site_list.sites.length) {
-            i++;
+        var any = false;
+        for (var si = 0; si < this.site_lists.length; si++) {
+          if (this.site_lists[si].sites.length) {
+            any = true;
+            break;
           }
-          return site_list.render(i);
-        }));
+        }
+        if (!any) {
+          body = h("div.empty-state", [
+            h("div.empty-state-title", this.num_total === 0 ? "The directory is empty" : "Nothing matches your filters"),
+            h("div.empty-state-text", this.num_total === 0
+              ? "Be the first: submit a xite and stand behind it with your xId."
+              : "Loosen the language filter, or switch safe mode off to see more.")
+          ]);
+        } else {
+          body = h("div.sitelists", this.site_lists.map(function(site_list) {
+            if (site_list.sites.length) {
+              i++;
+            }
+            return site_list.render(i);
+          }));
+        }
       }
 
       return h("div#SiteLists", {classes: {"state-siteadd": this.state === "siteadd"}},
