@@ -16,7 +16,7 @@
 }
 .menu-item:hover { background: var(--surface2); }
 .menu-item.selected { color: var(--accent); font-weight: 600; }
-.menu-item.noaction { color: var(--muted); cursor: default; }
+.menu-item.noaction { color: var(--muted); cursor: default; white-space: normal; }
 .menu-item-separator { height: 1px; background: var(--border); margin: 6px 4px; }
 
 .actions-menu { font-weight: 500; }
@@ -28,8 +28,8 @@
   display: inline-block; margin: 0 4px 6px 0; padding: 3px 9px;
   border: 1px solid var(--border); border-radius: 999px;
   font-size: 11px; text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
 }
-.menu-radio a.long { text-transform: none; }
 .menu-radio a:hover { border-color: var(--border-strong); color: var(--text); }
 .menu-radio a.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .menu-radio a.all { font-weight: 600; }
