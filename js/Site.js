@@ -376,7 +376,7 @@
       var starred = Page.user.starred[uri];
       var untrusted_submitter = info ? info.submitter_w <= 0 : false;
       var state = info ? info.state : "unverified";
-      var blur = Page.site_lists.safe_mode && (state === "warned" || state === "delisted");
+      var blur = Page.site_lists.hide_adult && (state === "warned" || state === "delisted");
 
       var star_count = info ? info.star_count : (this.row.star || 0);
 

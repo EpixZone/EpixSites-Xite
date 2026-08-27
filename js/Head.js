@@ -8,7 +8,7 @@
       this.handleSearchInput = this.handleSearchInput.bind(this);
       this.handleSearchKeydown = this.handleSearchKeydown.bind(this);
       this.handleSearchClear = this.handleSearchClear.bind(this);
-      this.handleSafeClick = this.handleSafeClick.bind(this);
+      this.handleAdultClick = this.handleAdultClick.bind(this);
       this.render = this.render.bind(this);
     }
 
@@ -59,8 +59,8 @@
       return false;
     }
 
-    handleSafeClick() {
-      Page.site_lists.setSafeMode(!Page.site_lists.safe_mode);
+    handleAdultClick() {
+      Page.site_lists.setHideAdult(!Page.site_lists.hide_adult);
       return false;
     }
 
@@ -71,8 +71,7 @@
     }
 
     render() {
-      var flagged_count = Page.site_lists ? Page.site_lists.flagged_count : 0;
-      var safe_on = Page.site_lists ? Page.site_lists.safe_mode : true;
+      var hiding_adult = Page.site_lists ? Page.site_lists.hide_adult : true;
       return h("div#Head", [
         this.renderSyncbar(),
         h("div.head-inner", [
@@ -89,19 +88,19 @@
             }),
             this.search_text ? h("a.searchbox-clear", {href: "#Clear", onclick: this.handleSearchClear}, "×") : null
           ]),
-          h("a.safe-toggle", {href: "#Safe", onclick: this.handleSafeClick, classes: {on: safe_on},
-            title: safe_on ? "Safe mode is on: adult-rated xites are hidden" : "Safe mode is off: adult-rated xites are shown"}, [
-            h("span.safe-dot"),
-            h("span.safe-label", safe_on ? "Safe" : "All")
+          h("a.adult-filter", {href: "#Adult", onclick: this.handleAdultClick, classes: {filtering: hiding_adult},
+            title: hiding_adult
+              ? "Adult-rated xites are hidden. Click to show them."
+              : "Adult-rated xites are shown. Click to hide them."}, [
+            h("span.adult-dot"),
+            h("span.adult-label", hiding_adult ? "Adult hidden" : "Adult shown")
           ])
         ]),
         h("div.head-tabs", [
           h("a.tab", {href: "#", name: "popular", classes: {active: this.active === "popular"}, onclick: this.handleMenuClick}, "Popular"),
           h("a.tab", {href: "#", name: "new", classes: {active: this.active === "new"}, onclick: this.handleMenuClick}, "New"),
-          h("a.tab.tab-flagged", {href: "#", name: "flagged", classes: {active: this.active === "flagged"}, onclick: this.handleMenuClick}, [
-            "Flagged",
-            flagged_count ? h("span.tab-badge", "" + flagged_count) : null
-          ]),
+          h("a.tab.tab-audit", {href: "#", name: "flagged", classes: {active: this.active === "flagged"},
+            onclick: this.handleMenuClick, title: "Listings the community has reported or delisted, kept auditable"}, "Flagged"),
           Page.sync_visible ? h("span.syncnote", "syncing…") : null
         ])
       ]);

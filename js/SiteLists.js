@@ -5,7 +5,7 @@
       this.menu_filters = new Menu();
       this.state = null;
       this.filter_lang = {};
-      this.safe_mode = true;
+      this.hide_adult = true;
       this.site_add = new SiteAdd();
       this.site_lists = [];
       this.site_lists_db = {};
@@ -35,8 +35,8 @@
       Page.on_site_info.then(() => {
         Page.on_local_storage.then(() => {
           this.filter_lang = Page.local_storage.filter_lang;
-          if (Page.local_storage.safe_mode !== undefined) {
-            this.safe_mode = Page.local_storage.safe_mode;
+          if (Page.local_storage.hide_adult !== undefined) {
+            this.hide_adult = Page.local_storage.hide_adult;
           }
           var categories = Page.site_info.content.settings.categories;
           for (var i = 0; i < categories.length; i++) {
@@ -153,7 +153,7 @@
       var info = this.trust[row.uri];
       if (info && info.state === "delisted") return false;
       if (row.owner_hidden) return false;
-      if (this.safe_mode) {
+      if (this.hide_adult) {
         if (info && info.severity === "a") return false;
         if (row.category === 13) return false;
       }
@@ -277,9 +277,9 @@
       Page.projector.scheduleRender();
     }
 
-    setSafeMode(on) {
-      this.safe_mode = !!on;
-      Page.local_storage.safe_mode = this.safe_mode;
+    setHideAdult(on) {
+      this.hide_adult = !!on;
+      Page.local_storage.hide_adult = this.hide_adult;
       Page.saveLocalStorage();
       if (this.loaded) this.distribute();
       Page.projector.scheduleRender();
@@ -392,7 +392,13 @@
 
     renderFlagged() {
       return h("div.flagged-view", [
-        h("div.flagged-note", "Nothing is silently removed: every warned or delisted listing stays auditable here, with its evidence."),
+        h("div.flagged-note", [
+          this.flagged_count
+            ? (this.flagged_count === 1 ? "1 listing is " : this.flagged_count + " listings are ") +
+              "reported or delisted. "
+            : "",
+          "Nothing is silently removed: every one stays auditable here, with its evidence."
+        ]),
         this.flagged_list.items.length
           ? h("div.sites.sites-flat", this.flagged_list.items.map(function(item) { return item.render(); }))
           : h("h2.empty", "No flagged listings. Good.")

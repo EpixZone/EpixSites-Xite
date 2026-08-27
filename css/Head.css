@@ -67,18 +67,18 @@
 }
 .searchbox-clear:hover { background: var(--surface2); color: var(--text); }
 
-.safe-toggle {
+.adult-filter {
   flex: none; display: flex; align-items: center; gap: 7px;
   height: 32px; padding: 0 14px; border-radius: 999px;
   border: 1px solid var(--border); color: var(--muted);
   font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
-  transition: all 0.15s;
+  white-space: nowrap; transition: all 0.15s;
 }
-.safe-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong); }
-.safe-toggle.on { border-color: var(--success); color: var(--success); background: var(--success-soft); }
-.safe-toggle.on .safe-dot { background: var(--success); }
-.safe-toggle:hover { border-color: var(--border-strong); }
-.safe-toggle.on:hover { border-color: var(--success); }
+.adult-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong); }
+.adult-filter.filtering { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.adult-filter.filtering .adult-dot { background: var(--accent); }
+.adult-filter:hover { border-color: var(--border-strong); }
+.adult-filter.filtering:hover { border-color: var(--accent); }
 
 .head-tabs {
   display: flex; align-items: center; gap: 4px;
@@ -92,15 +92,13 @@
 }
 .tab:hover { background: var(--surface2); color: var(--text); }
 .tab.active { background: var(--accent-soft); color: var(--accent); }
-.tab-badge {
-  display: inline-block; margin-left: 6px; padding: 1px 7px;
-  background: var(--danger); color: #FEFEFE;
-  border-radius: 999px; font-size: 10px; font-weight: 700; vertical-align: 1px;
-}
-.syncnote { margin-left: auto; font-size: 12px; color: var(--muted); font-style: italic; }
+.tab-audit { margin-left: auto; font-weight: 500; color: var(--border-strong); }
+.tab-audit:hover { color: var(--muted); }
+.tab-audit.active { background: var(--surface2); color: var(--muted); }
+.syncnote { font-size: 12px; color: var(--muted); font-style: italic; }
 
 @media (max-width: 719px) {
   .head-inner { flex-wrap: wrap; padding-right: 80px; }
   .searchbox { order: 3; flex-basis: 100%; max-width: none; }
-  .safe-toggle { margin-left: auto; }
+  .adult-filter { margin-left: auto; }
 }
