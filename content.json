@@ -28,6 +28,7 @@
  },
  "edx": 1,
  "epixnet_version": "0.3.28",
+ "favicon": "img/favicon.ico",
  "feeds": {
   "listings": {
    "clock_unit": "ms",
@@ -322,7 +323,9 @@
   ],
   "prefetch": [
    "img/logo.png",
-   "dbschema.json"
+   "dbschema.json",
+   "img/favicon.ico",
+   "img/favicon.png"
   ]
  },
  "postmessage_nonce_security": true,
