@@ -68,17 +68,15 @@
 .searchbox-clear:hover { background: var(--surface2); color: var(--text); }
 
 .adult-filter {
-  flex: none; display: flex; align-items: center; gap: 7px;
-  height: 32px; padding: 0 14px; border-radius: 999px;
-  border: 1px solid var(--border); color: var(--muted);
-  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
-  white-space: nowrap; transition: all 0.15s;
+  flex: none; display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px;
+  color: var(--border-strong); transition: color 0.15s, background 0.15s;
 }
-.adult-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong); }
-.adult-filter.filtering { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-.adult-filter.filtering .adult-dot { background: var(--accent); }
-.adult-filter:hover { border-color: var(--border-strong); }
-.adult-filter.filtering:hover { border-color: var(--accent); }
+.adult-filter:hover { color: var(--muted); background: var(--surface2); }
+/* Only the unusual state says anything: adult listings are showing. */
+.adult-filter.showing { color: var(--accent); }
+.adult-filter.showing:hover { color: var(--accent); }
+.adult-icon { display: block; }
 
 .head-tabs {
   display: flex; align-items: center; gap: 4px;
