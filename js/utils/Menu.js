@@ -9,6 +9,7 @@
       this.hide = this.hide.bind(this);
       this.toggle = this.toggle.bind(this);
       this.storeNode = this.storeNode.bind(this);
+      this.position = this.position.bind(this);
       this.handleClick = this.handleClick.bind(this);
       this.renderItem = this.renderItem.bind(this);
       this.render = this.render.bind(this);
@@ -18,10 +19,52 @@
       if (window.visible_menu) window.visible_menu.hide();
       this.visible = true;
       window.visible_menu = this;
+      this.schedulePosition();
+      window.addEventListener("scroll", this.position, true);
+      window.addEventListener("resize", this.position);
     }
 
     hide() {
       this.visible = false;
+      window.removeEventListener("scroll", this.position, true);
+      window.removeEventListener("resize", this.position);
+    }
+
+    // The card menus sit inside a CSS multi-column masonry, and a multicol
+    // fragment clips absolutely positioned descendants: the menu came out
+    // sliced off mid-list and spilling into the next row. Position it fixed
+    // against its trigger instead, which escapes that clipping, and flip it
+    // above the trigger when the viewport runs out below.
+    position() {
+      var node = this.node;
+      if (!node || !this.visible) return;
+      var anchor = node.parentNode;
+      if (!anchor || !anchor.getBoundingClientRect) return;
+      var rect = anchor.getBoundingClientRect();
+      var width = node.offsetWidth;
+      var height = node.offsetHeight;
+      var margin = 8;
+      var gap = 6;
+
+      var left = rect.right - width;
+      if (left + width > window.innerWidth - margin) {
+        left = window.innerWidth - margin - width;
+      }
+      if (left < margin) left = margin;
+
+      var top = rect.bottom + gap;
+      if (top + height > window.innerHeight - margin) {
+        var above = rect.top - height - gap;
+        top = above >= margin ? above : Math.max(margin, window.innerHeight - margin - height);
+      }
+      node.style.left = Math.round(left) + "px";
+      node.style.top = Math.round(top) + "px";
+    }
+
+    // The node is measured after the render that shows it, so its own size is
+    // known before it is placed.
+    schedulePosition() {
+      window.requestAnimationFrame(this.position);
     }
 
     toggle() {
@@ -42,6 +85,7 @@
       this.node = node;
       if (this.visible) {
         node.className = node.className.replace("visible", "");
+        this.schedulePosition();
         setTimeout(function() {
           node.className += " visible";
         }, 20);

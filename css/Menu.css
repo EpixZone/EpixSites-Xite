@@ -1,8 +1,12 @@
 /* Dropdown menus (filter menu, card actions menu). */
 
+/* Fixed, with coordinates set by Menu.position: a CSS multi-column
+   fragment clips absolutely positioned descendants, which cut the card
+   menus off. */
 .menu {
-  position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
+  position: fixed; top: 0; left: 0; z-index: 60;
   min-width: 220px; padding: 6px;
+  max-height: calc(100vh - 16px); overflow-y: auto;
   background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   opacity: 0; transform: translateY(-4px); pointer-events: none;
