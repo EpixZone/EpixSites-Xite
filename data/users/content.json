@@ -3,26 +3,18 @@
  "files": {},
  "ignore": ".",
  "inner_path": "data/users/content.json",
- "modified": 1785365889,
- "signs": {
-  "epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "GyZx9h8znV47pNu15zAKjspHEirhVzF4hoXGzDnS20mTWVyVgaWJ/UHjAr3MD0Zyx0Q3EC9KQh49l80RhNaJ67k="
- },
+ "modified": 1787800872,
+ "signs": {"epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf": "HAZQEMc82mvpnqb/ll3tJd8bUrK5RcjJwgprkq31q85JL3WkQB/n9aDPIefEtmFgzzcb/l6rcyX/2c9cWoJOeAY="},
  "user_contents": {
   "cert_signers": {
-   "xid.epix": [
-    "chain"
-   ]
+   "xid.epix": ["chain"]
   },
   "permission_rules": {
    ".": {
     "files_allowed": "data.json",
     "max_size": 200000,
     "merge_files": {
-     "sites.json": {
-      "class": "epix-orset-1",
-      "max_size": 3000000
-     },
-     "stars.json": {
+     "claims.json": {
       "class": "epix-orset-1",
       "max_size": 3000000
      },
@@ -34,14 +26,16 @@
       "class": "epix-orset-1",
       "max_size": 3000000
      },
-     "claims.json": {
+     "sites.json": {
+      "class": "epix-orset-1",
+      "max_size": 3000000
+     },
+     "stars.json": {
       "class": "epix-orset-1",
       "max_size": 3000000
      }
     },
-    "signers": [
-     "mud.epix"
-    ]
+    "signers": ["mud.epix"]
    }
   },
   "permissions": {}
