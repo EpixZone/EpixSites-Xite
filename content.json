@@ -308,6 +308,7 @@
    "js/utils/Translate.js",
    "js/utils/Text.js",
    "js/utils/Menu.js",
+   "js/utils/Tip.js",
    "js/utils/ItemList.js",
    "js/utils/Form.js",
    "js/utils/Trust.js",
