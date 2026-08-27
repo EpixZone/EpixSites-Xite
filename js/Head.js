@@ -109,8 +109,8 @@
             }),
             this.search_text ? h("a.searchbox-clear", {href: "#Clear", onclick: this.handleSearchClear}, "×") : null
           ]),
-          h("a.adult-filter", {href: "#Adult", onclick: this.handleAdultClick, classes: {showing: !hiding_adult},
-            title: hiding_adult
+          h("a.adult-filter.tip", {href: "#Adult", onclick: this.handleAdultClick, classes: {showing: !hiding_adult},
+            "data-tip": hiding_adult
               ? "Adult-rated xites are hidden. Click to show them."
               : "Adult-rated xites are shown. Click to hide them.",
             "aria-label": hiding_adult ? "Adult-rated xites are hidden" : "Adult-rated xites are shown"},

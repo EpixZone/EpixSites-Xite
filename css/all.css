@@ -134,6 +134,36 @@ h2.empty {
   }
 }
 
+/* Tooltip for controls that carry no label of their own. Uses data-tip so a
+   native title does not fire a second, unstyled tooltip over the top of it,
+   and appears quickly: the OS delay is long enough that people conclude an
+   icon simply has no explanation. */
+.tip {
+  position: relative;
+  /* A long press must open the tooltip, not the OS text/callout menu. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; user-select: none;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 70;
+  max-width: 260px; width: max-content; padding: 7px 10px;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  font-size: 12px; font-weight: 500; line-height: 1.4; text-align: left;
+  opacity: 0; transform: translateY(-3px); pointer-events: none;
+  transition: opacity 0.12s ease-out 0.15s, transform 0.12s ease-out 0.15s;
+}
+.tip:hover::after, .tip:focus-visible::after { opacity: 1; transform: translateY(0); }
+/* Opened by long press on touch, where hover never happens. */
+.tip.tip-open::after { opacity: 1; transform: translateY(0); transition-delay: 0s; }
+/* Anchored to the left edge instead, for controls near the viewport's left. */
+.tip.tip-left::after { right: auto; left: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .tip::after { transform: none; }
+}
+
 
 /* ---- css/Animation.css ---- */
 
