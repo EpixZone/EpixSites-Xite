@@ -418,8 +418,8 @@
    "member_weight": 1,
    "settle_weight": 3,
    "sev": {
+    "abuse": 1,
     "dead": 0,
-    "illegal": 1,
     "malware": 1,
     "scam": 1,
     "spam": 0

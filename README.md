@@ -8,7 +8,8 @@ Search and discover xites on [EpixNet](https://epixnet.io). A decentralized dire
 - Browse by category and language (Yahoo-style directory under a search box)
 - Content ratings: every listing declares General / Mature / Adult, and the community votes on the real label
 - Listing states: Unverified, Verified, Mislabeled, Reported, Delisted, driven by weighted community votes and reports
-- Reports with narrow reason codes (malware, illegal, scam, dead, spam) plus vouches as counter-reports; only malware/illegal/scam can warn or delist
+- Reports with narrow reason codes (malware, abuse or exploitation of a person, scam, dead, spam) plus vouches as counter-reports; only the first three can warn or delist
+- Reasons describe harm, never legal status: what is unlawful in one country is lawful in another, so a global vote never turns on a statute. Locally unlawful content is a node operator's own filtering concern
 - Safe mode (on by default) hides adult-rated listings
 - Flagged audit tab: nothing is silently removed, every warned or delisted listing stays inspectable with its evidence
 - Every card names its submitter ("Submitted by name.epix"): listings are public, signed records tied to a paid xId

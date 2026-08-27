@@ -323,7 +323,8 @@
     // authorized signer of EVERY user directory, so the node accepts a signed
     // moderation tombstone written into the target user's own merge file and a
     // publish of the target's content.json (the EpixTalk production pattern).
-    // Used only to hard-remove illegal content; ordinary bad listings are
+    // Used only to hard-remove material that abuses or exploits a person;
+    // ordinary bad listings are
     // handled by the report thresholds.
     moderateDelete(target_dir, site_id, cb) {
       var target = new User(null, target_dir);

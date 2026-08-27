@@ -185,7 +185,7 @@
       if (Page.user.isEditor() && !this.isMine()) {
         this.menu_actions.addItem("---", null);
         this.menu_actions.addItem("Editor: remove listing", () => {
-          Page.cmd("wrapperConfirm", ["Remove this listing with a signed moderation tombstone? This is for illegal content; ordinary bad listings are handled by reports.", "Remove"], () => {
+          Page.cmd("wrapperConfirm", ["Remove this listing with a signed moderation tombstone? This is for material that abuses or exploits a person; ordinary bad listings are handled by reports.", "Remove"], () => {
             Page.user.moderateDelete(this.row.directory, this.row.site_id, () => Page.site_lists.update());
           });
         });
