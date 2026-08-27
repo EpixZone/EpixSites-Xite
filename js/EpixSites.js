@@ -208,7 +208,13 @@
     onOpenWebsocket(e) {
       this.cmd("serverInfo", {}, (server_info) => {
         this.setServerInfo(server_info);
-        var lang = server_info && server_info.user_settings ? server_info.user_settings.language : null;
+        // The node reports its UI language at the top level of serverInfo;
+        // user_settings carries per-xite preferences and has no language key.
+        var lang = null;
+        if (server_info) {
+          lang = server_info.language ||
+            (server_info.user_settings ? server_info.user_settings.language : null);
+        }
         loadLanguage(lang, () => {
           this.cmd("siteInfo", {}, (site_info) => {
             this.setSiteInfo(site_info);
