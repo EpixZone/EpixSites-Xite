@@ -179,7 +179,7 @@
               h("a.claim-copy", {href: "#Copy", "data-copy": "challenge", onclick: this.handleCopy},
                 this.copied === "challenge" ? "copied" : "copy")
             ]),
-            h("div.field-note", "On the machine that holds the key. Your key never touches this page:"),
+            h("div.field-note", "Run this on the node that holds the key. It signs with the stored key, or asks you to paste one; either way the key never becomes a command argument, so it stays out of your shell history and out of this page:"),
             h("div.claim-code.claim-code-cmd", [
               h("code", Claim.signCommand(this.address, dir)),
               h("a.claim-copy", {href: "#CopyCmd", "data-copy": "command", onclick: this.handleCopy},

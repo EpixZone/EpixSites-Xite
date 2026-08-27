@@ -26,11 +26,13 @@
       ].join(":");
     }
 
-    // What the owner runs on their own machine. The key never touches this
-    // page: only the signature comes back.
+    // What the owner runs on their own machine. The key is never an argument:
+    // a node that already holds this xite's key signs with it, and otherwise
+    // the command prompts for the key on stdin. Passing it on the command
+    // line would put it in shell history and expose it through `ps`.
     signCommand(target_address, claimant_dir) {
       var challenge = this.challenge(target_address, claimant_dir);
-      return "epix-server siteCmd " + target_address + " ecdsaSign '[\"" + challenge + "\", \"<your xite private key>\"]'";
+      return "epix-server siteSignMessage " + target_address + " '" + challenge + "'";
     }
 
     // ecdsaVerify is a websocket round trip, so results are cached by
