@@ -102,6 +102,7 @@
 				["tags", "TEXT"],
 				["rating", "TEXT"],
 				["date_added", "DATETIME"],
+				["hidden", "INTEGER"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX site_claim_key ON site_claim(json_id, target_address)", "CREATE INDEX site_claim_target ON site_claim(target_address)"],

@@ -147,10 +147,12 @@
       Page.projector.scheduleRender();
     }
 
-    // A listing is browsable when it is not delisted and passes safe mode.
+    // A listing is browsable when it is not delisted, not withdrawn by its
+    // owner, and passes safe mode.
     isBrowsable(row) {
       var info = this.trust[row.uri];
       if (info && info.state === "delisted") return false;
+      if (row.owner_hidden) return false;
       if (this.safe_mode) {
         if (info && info.severity === "a") return false;
         if (row.category === 13) return false;
@@ -205,6 +207,9 @@
       for (i = 0; i < this.rows.length; i++) {
         row = this.rows[i];
         var info = this.trust[row.uri];
+        // Owner withdrawal removes a listing from browse and search, but a
+        // reported one stays auditable here: hiding a xite must never be a
+        // way to shed the reports against it.
         if (info && (info.state === "warned" || info.state === "delisted")) {
           flagged.push(row);
           if (info.state === "delisted") delisted_count++;

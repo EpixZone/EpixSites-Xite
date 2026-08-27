@@ -323,6 +323,10 @@
         chips.push(h("span.chip.chip-owned", {key: "owned",
           title: "The holder of this xite's key claimed this listing (" + this.row.claimed_by + ")"}, "Owner"));
       }
+      if (this.row.owner_hidden) {
+        chips.push(h("span.chip.chip-withdrawn", {key: "withdrawn",
+          title: "The owner withdrew this xite from the directory. It stays here because it carries open reports."}, "Withdrawn"));
+      }
       if (this.isNew()) {
         chips.push(h("span.chip.chip-new", {key: "new"}, "New"));
       }

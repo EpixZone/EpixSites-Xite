@@ -104,6 +104,11 @@
     apply(row, claim) {
       row.claimed_by = claim.claimant_dir;
       row.claim_date = claim.date_added;
+      // Withdrawal by the owner. Keyed on the address, so it also covers a
+      // listing someone re-submits later. It hides, it never erases: a
+      // listing carrying reports stays in the Flagged view (see
+      // SiteLists.isBrowsable), or hiding would be a way to shed them.
+      row.owner_hidden = claim.hidden === 1 || claim.hidden === true;
       if (claim.title) row.title = claim.title;
       if (claim.description) row.description = claim.description;
       if (claim.category !== undefined && claim.category !== null && claim.category !== "") {

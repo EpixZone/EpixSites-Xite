@@ -21,8 +21,10 @@
         category: "" + (this.row.category || CATEGORY_NONE),
         language: this.row.language || "en",
         tags: this.row.tags || "",
-        rating: this.row.rating || "g"
+        rating: this.row.rating || "g",
+        hidden: this.row.owner_hidden ? "1" : "0"
       };
+      this.handleHideClick = this.handleHideClick.bind(this);
       this.handleInput = this.handleInput.bind(this);
       this.handleRadioClick = this.handleRadioClick.bind(this);
       this.handleCopy = this.handleCopy.bind(this);
@@ -75,6 +77,26 @@
       return false;
     }
 
+    // Reports are what a withdrawal must never shed, so a listing carrying
+    // them cannot be hidden. It stays in the Flagged view either way; this
+    // just refuses the request plainly instead of half honouring it.
+    reportsStanding() {
+      var info = Page.site_lists.trust[this.row.uri];
+      return !!info && (info.state === "warned" || info.state === "delisted");
+    }
+
+    handleHideClick() {
+      if (this.data.hidden === "0" && this.reportsStanding()) {
+        this.error = "This listing has open reports against it. You can correct its description, but withdrawing it would hide those reports, so it stays listed until they are resolved.";
+        Page.projector.scheduleRender();
+        return false;
+      }
+      this.data.hidden = this.data.hidden === "1" ? "0" : "1";
+      this.error = null;
+      Page.projector.scheduleRender();
+      return false;
+    }
+
     fields() {
       return {
         "title": this.data.title,
@@ -82,7 +104,8 @@
         "category": this.data.category === "" ? undefined : parseInt(this.data.category),
         "language": this.data.language,
         "tags": this.data.tags,
-        "rating": this.data.rating
+        "rating": this.data.rating,
+        "hidden": this.data.hidden === "1" ? 1 : 0
       };
     }
 
@@ -238,6 +261,19 @@
               h("label.title", "Content rating"),
               this.renderRadio("rating", [["g", "General"], ["m", "Mature"], ["a", "Adult"]], ".radiogroup-rating"),
               h("div.field-note", "You can make this listing stricter than it was submitted, never softer: the community's settled rating still governs what safe mode hides.")
+            ]),
+            h("div.formfield", [
+              h("label.title", "Listing in the directory"),
+              h("a.hide-toggle", {href: "#Hide", onclick: this.handleHideClick,
+                classes: {on: this.data.hidden === "1", disabled: this.reportsStanding()}}, [
+                h("span.hide-box", this.data.hidden === "1" ? "✓" : ""),
+                h("span.hide-label", this.data.hidden === "1"
+                  ? "Withdrawn: this xite is hidden from browse and search"
+                  : "Withdraw this xite from the directory")
+              ]),
+              h("div.field-note", this.reportsStanding()
+                ? "This listing has open reports, so it cannot be withdrawn until they are resolved. Hiding it would hide them too."
+                : "Withdrawal covers this xite's address, so a listing anyone submits later is hidden as well. Nothing is deleted, and you can undo this at any time.")
             ])
           ]),
           h("div.claim-actions", [

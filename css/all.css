@@ -363,6 +363,7 @@ h2.empty {
 .chip-mislabeled { background: var(--accent-soft); color: var(--accent); }
 .chip-new { background: var(--info-soft); color: var(--info); }
 .chip-owned { background: var(--accent-soft); color: var(--accent); }
+.chip-withdrawn { background: var(--surface2); color: var(--muted); }
 .chip-caution { background: var(--warning-soft); color: var(--warning); padding: 1px 7px; }
 
 .site-description {
@@ -612,6 +613,18 @@ input.text.invalid { border-color: var(--danger); }
 .claim-fields { display: flex; flex-direction: column; gap: 14px; }
 .claim-actions { display: flex; align-items: center; gap: 14px; justify-content: flex-end; }
 .claim-actions .cancel { margin-right: auto; }
+
+.hide-toggle { display: inline-flex; align-items: center; gap: 9px; font-size: 13.5px; }
+.hide-box {
+  width: 18px; height: 18px; flex: none; border-radius: 4px;
+  border: 1px solid var(--border-strong); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #FEFEFE;
+}
+.hide-toggle:hover .hide-box { border-color: var(--accent); }
+.hide-toggle.on .hide-box { background: var(--accent); border-color: var(--accent); }
+.hide-toggle.on .hide-label { color: var(--accent); font-weight: 600; }
+.hide-toggle.disabled { opacity: 0.5; }
 
 
 /* ---- css/Menu.css ---- */
