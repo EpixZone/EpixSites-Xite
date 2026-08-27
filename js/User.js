@@ -6,6 +6,7 @@
       this.my_ratings = {};   // uri -> label
       this.my_reports = {};   // uri -> reason
       this.my_vouches = {};   // uri -> true
+      this.my_claims = {};    // target_address -> true
       this.directory_override = directory || null;
       this.certSelect = this.certSelect.bind(this);
       this.resolveXid = this.resolveXid.bind(this);
@@ -29,8 +30,9 @@
       this.my_ratings = {};
       this.my_reports = {};
       this.my_vouches = {};
+      this.my_claims = {};
       var user_dir = "" + this.getUserDirectory();
-      var pending = 3;
+      var pending = 4;
       var done = () => {
         pending--;
         if (pending === 0) {
@@ -48,6 +50,12 @@
         for (var i = 0; i < res.length; i++) {
           var row = res[i];
           if (row["target_dir"]) this.my_ratings[row["target_dir"] + "_" + row["target_site_id"]] = row["label"];
+        }
+        done();
+      });
+      Page.cmd("dbQuery", ["SELECT site_claim.* FROM json LEFT JOIN site_claim USING (json_id) WHERE ?", {directory: user_dir}], (res) => {
+        for (var i = 0; i < res.length; i++) {
+          if (res[i]["target_address"]) this.my_claims[res[i]["target_address"]] = true;
         }
         done();
       });
@@ -125,7 +133,7 @@
     // live winners for the DB, so reads stay unchanged.
 
     mergeCollections() {
-      return ["sites", "stars", "ratings", "reports"];
+      return ["sites", "stars", "ratings", "reports", "claims"];
     }
 
     // A 128-bit random nonce (hex): part of every record's signed payload.
@@ -258,6 +266,37 @@
             this.my_reports[uri] = reason;
           }
         }
+        if (typeof cb === "function") cb(res);
+      });
+    }
+
+    // Claim a xite by proving control of its key: `owner_sign` is the xite's
+    // own signature over Claim.challenge(). One standing claim per (user,
+    // address), so re-claiming supersedes and releasing tombstones.
+    claim(target_address, owner_sign, fields, cb) {
+      // No claimant_dir in the record: the challenge names the directory, and
+      // readers take that directory from json.directory (where the record
+      // actually lives). Copying someone else's valid claim into your own dir
+      // therefore fails to verify, which is what keeps the unsigned
+      // descriptive fields honest.
+      var address = ("" + target_address).toLowerCase();
+      var record = {
+        "target_address": address,
+        "owner_sign": owner_sign
+      };
+      for (var k in fields) {
+        if (fields[k] !== undefined) record[k] = fields[k];
+      }
+      this.editRecord("claims", "claim_" + address, record, false, (res) => {
+        if (res === "ok") this.my_claims[address] = true;
+        if (typeof cb === "function") cb(res);
+      });
+    }
+
+    releaseClaim(target_address, cb) {
+      var address = ("" + target_address).toLowerCase();
+      this.editRecord("claims", "claim_" + address, {}, true, (res) => {
+        if (res === "ok") delete this.my_claims[address];
         if (typeof cb === "function") cb(res);
       });
     }

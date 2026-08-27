@@ -195,7 +195,26 @@
           this.handleEditClick();
         });
       }
+      this.menu_actions.addItem("---", null);
+      var owner_dir = this.row.claimed_by;
+      var is_owner = owner_dir && owner_dir === Page.user.getUserDirectory();
+      if (is_owner) {
+        this.menu_actions.addItem("Manage my xite's listing", () => {
+          this.handleClaimClick();
+        });
+      } else if (!owner_dir) {
+        this.menu_actions.addItem("I own this xite: claim it", () => {
+          this.handleClaimClick();
+        });
+      }
       this.menu_actions.toggle();
+      return false;
+    }
+
+    handleClaimClick() {
+      this.withCert(() => {
+        Page.setFormEdit(new ClaimForm(this));
+      });
       return false;
     }
 
@@ -300,6 +319,14 @@
           chips.push(h("span.chip.chip-caution", {key: "caution", title: "This xite has an open report"}, "!"));
         }
       }
+      if (this.row.claimed_by) {
+        chips.push(h("span.chip.chip-owned", {key: "owned",
+          title: "The holder of this xite's key claimed this listing (" + this.row.claimed_by + ")"}, "Owner"));
+      }
+      if (this.row.owner_hidden) {
+        chips.push(h("span.chip.chip-withdrawn", {key: "withdrawn",
+          title: "The owner withdrew this xite from the directory. It stays here because it carries open reports."}, "Withdrawn"));
+      }
       if (this.isNew()) {
         chips.push(h("span.chip.chip-new", {key: "new"}, "New"));
       }
@@ -371,8 +398,11 @@
           h("a.site-banner-why", {href: "#Evidence", onclick: this.handleEvidenceClick}, this.show_evidence ? "hide" : "why?")
         ]) : null,
         h("div.site-foot", [
-          h("span.site-by", {classes: {untrusted: untrusted_submitter}, title: this.row.cert_user_id || this.row.directory},
-            Text.formatUsername(this.row.directory)),
+          this.row.claimed_by
+            ? h("span.site-by.owned", {title: "Owner-managed: " + this.row.claimed_by + " proved control of this xite's key. Originally listed by " + this.row.directory},
+                Text.formatUsername(this.row.claimed_by))
+            : h("span.site-by", {classes: {untrusted: untrusted_submitter}, title: "Listed by " + (this.row.cert_user_id || this.row.directory)},
+                Text.formatUsername(this.row.directory)),
           h("span.site-foot-right", [
             this.row.peers ? h("span.site-peers", {title: this.row.peers + " peers seeding"}, [h("span.dot-live"), " " + this.row.peers]) : null,
             h("span.rate-group", {title: "Rate the content: General / Mature / Adult"}, RATING_LABELS.map((rl) => {

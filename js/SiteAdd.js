@@ -113,6 +113,12 @@
     shouldBeUniqueSite(value) {
       var address = this.parseAddress(value);
       if (!address) return null;
+      // The owner proved control of this xite's key and withdrew it. Say so,
+      // rather than accepting a submission that would be hidden on arrival.
+      var claim = Page.site_lists.claims[address.toLowerCase()];
+      if (claim && (claim.hidden === 1 || claim.hidden === true)) {
+        return "This xite's owner has withdrawn it from the directory.";
+      }
       var row = this.site_db[address.toLowerCase()];
       if (!row) return null;
       var info = Page.site_lists.trust[row.directory + "_" + row.site_id];

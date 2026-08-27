@@ -23,6 +23,11 @@
             "file_name": "data.json",
             "fold_crdt": "post"
         },
+        ".+/claims.json": {
+            "to_table": [ {"node": "post", "table": "site_claim"} ],
+            "file_name": "data.json",
+            "fold_crdt": "post"
+        },
         ".+/content.json": {
             "to_json_table": [ "cert_user_id" ],
             "file_name": "data.json"
@@ -84,6 +89,24 @@
 			],
 			"indexes": ["CREATE UNIQUE INDEX site_rating_key ON site_rating(json_id, target_dir, target_site_id)", "CREATE INDEX site_rating_target ON site_rating(target_dir, target_site_id)"],
 			"schema_changed": 11
+		},
+		"site_claim": {
+			"cols": [
+				["target_address", "TEXT"],
+				["owner_sign", "TEXT"],
+				["title", "TEXT"],
+				["description", "TEXT"],
+				["category", "INTEGER"],
+				["subcat", "TEXT"],
+				["language", "TEXT"],
+				["tags", "TEXT"],
+				["rating", "TEXT"],
+				["date_added", "DATETIME"],
+				["hidden", "INTEGER"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX site_claim_key ON site_claim(json_id, target_address)", "CREATE INDEX site_claim_target ON site_claim(target_address)"],
+			"schema_changed": 12
 		},
 		"site_report": {
 			"cols": [
