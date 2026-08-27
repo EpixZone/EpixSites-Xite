@@ -103,25 +103,25 @@
           h("div.searchbox", {classes: {filled: !!this.search_text}}, [
             h("span.searchbox-icon"),
             h("input.searchbox-input", {
-              type: "search", placeholder: "Search xites…", value: this.search_text,
+              type: "search", placeholder: _("Search xites…"), value: this.search_text,
               oninput: this.handleSearchInput, onkeydown: this.handleSearchKeydown,
-              "aria-label": "Search xites", spellcheck: "false", autocomplete: "off"
+              "aria-label": _("Search xites"), spellcheck: "false", autocomplete: "off"
             }),
             this.search_text ? h("a.searchbox-clear", {href: "#Clear", onclick: this.handleSearchClear}, "×") : null
           ]),
           h("a.adult-filter.tip", {href: "#Adult", onclick: this.handleAdultClick, classes: {showing: !hiding_adult},
             "data-tip": hiding_adult
-              ? "Adult-rated xites are hidden. Click to show them."
-              : "Adult-rated xites are shown. Click to hide them.",
-            "aria-label": hiding_adult ? "Adult-rated xites are hidden" : "Adult-rated xites are shown"},
+              ? _("Adult-rated xites are hidden. Click to show them.")
+              : _("Adult-rated xites are shown. Click to hide them."),
+            "aria-label": hiding_adult ? _("Adult-rated xites are hidden") : _("Adult-rated xites are shown")},
             this.renderEyeIcon(hiding_adult))
         ]),
         h("div.head-tabs", [
-          h("a.tab", {href: "#", name: "popular", classes: {active: this.active === "popular"}, onclick: this.handleMenuClick}, "Popular"),
-          h("a.tab", {href: "#", name: "new", classes: {active: this.active === "new"}, onclick: this.handleMenuClick}, "New"),
+          h("a.tab", {href: "#", name: "popular", classes: {active: this.active === "popular"}, onclick: this.handleMenuClick}, _("Popular")),
+          h("a.tab", {href: "#", name: "new", classes: {active: this.active === "new"}, onclick: this.handleMenuClick}, _("New")),
           h("a.tab.tab-audit", {href: "#", name: "flagged", classes: {active: this.active === "flagged"},
-            onclick: this.handleMenuClick, title: "Listings the community has reported or delisted, kept auditable"}, "Flagged"),
-          Page.sync_visible ? h("span.syncnote", "syncing…") : null
+            onclick: this.handleMenuClick, title: _("Listings the community has reported or delisted, kept auditable")}, _("Flagged")),
+          Page.sync_visible ? h("span.syncnote", _("syncing…")) : null
         ])
       ]);
     }

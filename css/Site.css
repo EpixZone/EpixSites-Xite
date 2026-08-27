@@ -4,7 +4,7 @@
   display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
 }
 .toolbar-right {
-  position: relative; margin-left: auto;
+  position: relative; margin-inline-start: auto;
   display: flex; align-items: center; gap: 14px;
 }
 .toolbar-filter { font-size: 12.5px; color: var(--muted); }
@@ -29,7 +29,7 @@
   color: var(--muted);
 }
 .categoryname:hover { color: var(--accent); }
-.categorycount { font-weight: 500; color: var(--border-strong); margin-left: 4px; }
+.categorycount { font-weight: 500; color: var(--border-strong); margin-inline-start: 4px; }
 
 .sitelist .sites { display: flex; flex-direction: column; gap: 10px; }
 
@@ -59,9 +59,9 @@
 }
 .site-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
 
-.site-card.state-warned { border-left: 3px solid var(--warning-strong); }
-.site-card.state-delisted { border-left: 3px solid var(--danger); }
-.site-card.state-mislabeled { border-left: 3px solid var(--accent); }
+.site-card.state-warned { border-inline-start: 3px solid var(--warning-strong); }
+.site-card.state-delisted { border-inline-start: 3px solid var(--danger); }
+.site-card.state-mislabeled { border-inline-start: 3px solid var(--accent); }
 
 .site-head { display: flex; align-items: flex-start; gap: 8px; }
 .site-title {
@@ -69,7 +69,7 @@
   overflow-wrap: anywhere;
 }
 .site-title:hover { color: var(--accent); }
-.site-chips { margin-left: auto; display: flex; gap: 5px; flex: none; cursor: pointer; }
+.site-chips { margin-inline-start: auto; display: flex; gap: 5px; flex: none; cursor: pointer; }
 
 .chip {
   display: inline-flex; align-items: center;
@@ -109,7 +109,7 @@
   font-size: 12px; font-weight: 600;
 }
 .state-delisted .site-banner { background: var(--danger-soft); color: var(--danger); }
-.site-banner-why { margin-left: auto; font-weight: 700; text-decoration: underline; }
+.site-banner-why { margin-inline-start: auto; font-weight: 700; text-decoration: underline; }
 
 .site-foot {
   display: flex; align-items: center; gap: 10px;
@@ -118,7 +118,7 @@
 .site-by { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
 .site-by.untrusted { color: var(--border-strong); font-style: italic; }
 .site-by.owned { color: var(--accent); }
-.site-foot-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.site-foot-right { margin-inline-start: auto; display: flex; align-items: center; gap: 10px; }
 
 .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
 .site-peers { display: inline-flex; align-items: center; gap: 4px; }
@@ -127,10 +127,10 @@
 .rate {
   width: 22px; height: 20px; display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; font-weight: 700; color: var(--border-strong);
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   transition: background 0.1s, color 0.1s;
 }
-.rate:last-child { border-right: none; }
+.rate:last-child { border-inline-end: none; }
 .rate:hover { background: var(--surface2); color: var(--text); }
 .rate.mine_declared { color: var(--muted); text-decoration: underline; }
 .rate-group .rate:nth-child(1).active { background: var(--success-soft); color: var(--success); }
@@ -172,7 +172,7 @@
 .evidence-vote-fill.fill-g { background: var(--success); }
 .evidence-vote-fill.fill-m { background: var(--warning-strong); }
 .evidence-vote-fill.fill-a { background: var(--danger); }
-.evidence-vote-num { width: 28px; flex: none; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.evidence-vote-num { width: 28px; flex: none; text-align: end; color: var(--muted); font-variant-numeric: tabular-nums; }
 .evidence-note { color: var(--muted); font-style: italic; margin-top: 3px; }
 .evidence-report { margin: 4px 0; }
 .evidence-reason { font-weight: 600; color: var(--danger); }

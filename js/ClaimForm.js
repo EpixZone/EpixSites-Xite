@@ -87,7 +87,7 @@
 
     handleHideClick() {
       if (this.data.hidden === "0" && this.reportsStanding()) {
-        this.error = "This listing has open reports against it. You can correct its description, but withdrawing it would hide those reports, so it stays listed until they are resolved.";
+        this.error = _("This listing has open reports against it. You can correct its description, but withdrawing it would hide those reports, so it stays listed until they are resolved.");
         Page.projector.scheduleRender();
         return false;
       }
@@ -122,7 +122,7 @@
       }
       var signature = (this.data.signature || "").trim();
       if (!signature) {
-        this.error = "Paste the signature produced by the command above.";
+        this.error = _("Paste the signature produced by the command above.");
         Page.projector.scheduleRender();
         return false;
       }
@@ -135,7 +135,7 @@
       Page.cmd("ecdsaVerify", [challenge, this.address, signature], (ok) => {
         this.checking = false;
         if (ok !== true) {
-          this.error = "That signature does not match this xite's address. Check that you signed the exact challenge with the xite's own private key.";
+          this.error = _("That signature does not match this xite's address. Check that you signed the exact challenge with the xite's own private key.");
           Page.projector.scheduleRender();
           return;
         }
@@ -156,17 +156,17 @@
         this.checking = false;
         if (res === "ok") {
           this.hidden = true;
-          Page.cmd("wrapperNotification", ["done", "Ownership verified. This listing is now yours to manage."]);
+          Page.cmd("wrapperNotification", ["done", _("Ownership verified. This listing is now yours to manage.")]);
           Page.site_lists.update();
         } else {
-          this.error = "Could not save the claim. Your data may still be syncing, try again in a moment.";
+          this.error = _("Could not save the claim. Your data may still be syncing, try again in a moment.");
         }
         Page.projector.scheduleRender();
       });
     }
 
     handleRelease() {
-      Page.cmd("wrapperConfirm", ["Release your claim on this xite? The listing stays, but goes back to the submitter's description.", "Release"], () => {
+      Page.cmd("wrapperConfirm", [_("Release your claim on this xite? The listing stays, but goes back to the submitter's description."), _("Release")], () => {
         Page.user.releaseClaim(this.address, (res) => {
           if (res === "ok") {
             this.hidden = true;
@@ -190,30 +190,30 @@
     renderProof() {
       var dir = Page.user.getUserDirectory();
       if (!dir) {
-        return h("div.claim-proof", h("div.field-note", "Connect your xId first: the challenge is bound to the identity that will manage this listing."));
+        return h("div.claim-proof", h("div.field-note", _("Connect your xId first: the challenge is bound to the identity that will manage this listing.")));
       }
       return h("div.claim-proof", [
         h("div.claim-step", [
           h("span.claim-step-num", "1"),
           h("div.claim-step-body", [
-            h("div.claim-step-title", "Sign this challenge with the xite's private key"),
+            h("div.claim-step-title", _("Sign this challenge with the xite's private key")),
             h("div.claim-code", [
               h("code", Claim.challenge(this.address, dir)),
               h("a.claim-copy", {href: "#Copy", "data-copy": "challenge", onclick: this.handleCopy},
-                this.copied === "challenge" ? "copied" : "copy")
+                this.copied === "challenge" ? _("copied") : _("copy"))
             ]),
-            h("div.field-note", "Run this on the node that holds the key. It signs with the stored key, or asks you to paste one; either way the key never becomes a command argument, so it stays out of your shell history and out of this page:"),
+            h("div.field-note", _("Run this on the node that holds the key. It signs with the stored key, or asks you to paste one; either way the key never becomes a command argument, so it stays out of your shell history and out of this page:")),
             h("div.claim-code.claim-code-cmd", [
               h("code", Claim.signCommand(this.address, dir)),
               h("a.claim-copy", {href: "#CopyCmd", "data-copy": "command", onclick: this.handleCopy},
-                this.copied === "command" ? "copied" : "copy")
+                this.copied === "command" ? _("copied") : _("copy"))
             ])
           ])
         ]),
         h("div.claim-step", [
           h("span.claim-step-num", "2"),
           h("div.claim-step-body", [
-            h("div.claim-step-title", "Paste the signature it prints"),
+            h("div.claim-step-title", _("Paste the signature it prints")),
             h("input.text", {type: "text", name: "signature", value: this.data.signature,
               placeholder: "e.g. HFzACm+9aUwOxCofwBGyBEC6...", oninput: this.handleInput,
               spellcheck: "false", autocomplete: "off"})
@@ -227,60 +227,60 @@
       return h("div.form-takeover-container", {key: this, afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover.form-claim", {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp}, [
           h("div.claim-head", [
-            h("div.claim-title", mine ? "Manage your listing" : "Claim this xite"),
+            h("div.claim-title", mine ? _("Manage your listing") : _("Claim this xite")),
             h("div.claim-sub", mine
-              ? "You proved control of this xite's key. Keep its description accurate here."
-              : "Prove you control this xite's key and its listing becomes yours to manage.")
+              ? _("You proved control of this xite's key. Keep its description accurate here.")
+              : _("Prove you control this xite's key and its listing becomes yours to manage."))
           ]),
-          h("div.claim-target", [h("span.claim-target-label", "Xite"), h("code", this.address)]),
+          h("div.claim-target", [h("span.claim-target-label", _("Xite")), h("code", this.address)]),
           mine ? null : this.renderProof(),
           this.error ? h("div.claim-error", this.error) : null,
           h("div.claim-fields", [
             h("div.formfield", [
-              h("label.title", "Title"),
+              h("label.title", _("Title")),
               h("input.text", {type: "text", name: "title", value: this.data.title, oninput: this.handleInput})
             ]),
             h("div.formfield", [
-              h("label.title", "Description"),
+              h("label.title", _("Description")),
               h("input.text", {type: "text", name: "description", value: this.data.description, oninput: this.handleInput})
             ]),
             h("div.formfield", [
-              h("label.title", "Category"),
-              this.renderRadio("category", Page.categories)
+              h("label.title", _("Category")),
+              this.renderRadio("category", Page.translatedCategories())
             ]),
             h("div.formfield", [
-              h("label.title", "Language"),
+              h("label.title", _("Language")),
               this.renderRadio("language", Page.languages.map(function(l) { return [l, l]; }), ".radiogroup-lang")
             ]),
             h("div.formfield", [
-              h("label.title", "Tags"),
+              h("label.title", _("Tags")),
               h("input.text", {type: "text", name: "tags", value: this.data.tags,
-                placeholder: "up to 5, comma separated", oninput: this.handleInput})
+                placeholder: _("up to 5, comma separated"), oninput: this.handleInput})
             ]),
             h("div.formfield", [
-              h("label.title", "Content rating"),
-              this.renderRadio("rating", [["g", "General"], ["m", "Mature"], ["a", "Adult"]], ".radiogroup-rating"),
-              h("div.field-note", "You can make this listing stricter than it was submitted, never softer: the community's settled rating still governs what safe mode hides.")
+              h("label.title", _("Content rating")),
+              this.renderRadio("rating", [["g", _("General")], ["m", _("Mature")], ["a", _("Adult")]], ".radiogroup-rating"),
+              h("div.field-note", _("You can make this listing stricter than it was submitted, never softer: the community's settled rating still governs what is hidden."))
             ]),
             h("div.formfield", [
-              h("label.title", "Listing in the directory"),
+              h("label.title", _("Listing in the directory")),
               h("a.hide-toggle", {href: "#Hide", onclick: this.handleHideClick,
                 classes: {on: this.data.hidden === "1", disabled: this.reportsStanding()}}, [
                 h("span.hide-box", this.data.hidden === "1" ? "✓" : ""),
                 h("span.hide-label", this.data.hidden === "1"
-                  ? "Withdrawn: this xite is hidden from browse and search"
-                  : "Withdraw this xite from the directory")
+                  ? _("Withdrawn: this xite is hidden from browse and search")
+                  : _("Withdraw this xite from the directory"))
               ]),
               h("div.field-note", this.reportsStanding()
-                ? "This listing has open reports, so it cannot be withdrawn until they are resolved. Hiding it would hide them too."
-                : "Withdrawal covers this xite's address, so a listing anyone submits later is hidden as well. Nothing is deleted, and you can undo this at any time.")
+                ? _("This listing has open reports, so it cannot be withdrawn until they are resolved. Hiding it would hide them too.")
+                : _("Withdrawal covers this xite's address, so a listing anyone submits later is hidden as well. Nothing is deleted, and you can undo this at any time."))
             ])
           ]),
           h("div.claim-actions", [
-            h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancel}, "Cancel"),
-            mine ? h("a.button.button-submit.button-outline", {href: "#Release", onclick: this.handleRelease}, "Release claim") : null,
+            h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancel}, _("Cancel")),
+            mine ? h("a.button.button-submit.button-outline", {href: "#Release", onclick: this.handleRelease}, _("Release claim")) : null,
             h("a.button.button-submit", {href: "#Claim", onclick: this.handleSubmit, classes: {loading: this.checking}},
-              mine ? "Save" : "Verify and claim")
+              mine ? _("Save") : _("Verify and claim"))
           ])
         ])
       ]);

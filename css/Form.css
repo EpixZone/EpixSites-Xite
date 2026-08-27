@@ -83,7 +83,7 @@ input.text.invalid { border-color: var(--danger); }
   padding: 22px; width: 100%; max-width: 640px;
   display: flex; flex-direction: column; gap: 14px;
 }
-.form-takeover .cancel { margin-right: auto; }
+.form-takeover .cancel { margin-inline-end: auto; }
 
 /* Ownership claim takeover */
 .form-claim { max-width: 680px; gap: 18px; }
@@ -140,7 +140,7 @@ input.text.invalid { border-color: var(--danger); }
 }
 .claim-fields { display: flex; flex-direction: column; gap: 14px; }
 .claim-actions { display: flex; align-items: center; gap: 14px; justify-content: flex-end; }
-.claim-actions .cancel { margin-right: auto; }
+.claim-actions .cancel { margin-inline-end: auto; }
 
 .hide-toggle { display: inline-flex; align-items: center; gap: 9px; font-size: 13.5px; }
 .hide-box {

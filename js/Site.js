@@ -85,7 +85,7 @@
       if (!this.requireCert(() => { this.rateLabel(label); })) return false;
       var uri = this.getUri();
       if (this.isMine()) {
-        Page.cmd("wrapperNotification", ["info", "Your submission's declared rating is already your vote. Edit the listing to change it."]);
+        Page.cmd("wrapperNotification", ["info", _("Your submission's declared rating is already your vote. Edit the listing to change it.")]);
         return false;
       }
       var prev = Page.user.my_ratings[uri];
@@ -128,14 +128,14 @@
       }
       var what;
       if (info.state === "delisted") {
-        what = "This xite is delisted by community reports: " + reasons.join(", ") + ".";
+        what = _("This xite is delisted by community reports: {reasons}.", {reasons: reasons.join(", ")});
       } else if (info.state === "warned") {
-        what = "This xite has open reports: " + reasons.join(", ") + ".";
+        what = _("This xite has open reports: {reasons}.", {reasons: reasons.join(", ")});
       } else {
-        what = "This xite was submitted by an unverified identity and has not been checked by the community yet.";
+        what = _("This xite was submitted by an unverified identity and has not been checked by the community yet.");
       }
       var address = this.row.address;
-      Page.cmd("wrapperConfirm", [what + " Open it anyway?", "Open"], function() {
+      Page.cmd("wrapperConfirm", [what + " " + _("Open it anyway?"), _("Open")], function() {
         var link = document.createElement("a");
         link.href = "/" + address;
         link.target = "_top";
@@ -155,27 +155,27 @@
       if (!this.isMine()) {
         var reasons = Trust.reasons();
         Object.keys(reasons).forEach((reason) => {
-          var title = (my_report === reason ? "✓ " : "") + "Report: " + reasons[reason];
+          var title = (my_report === reason ? "✓ " : "") + _("Report: {reason}", {reason: reasons[reason]});
           this.menu_actions.addItem(title, () => {
             this.submitReport(reason);
           });
         });
         this.menu_actions.addItem("---", null);
         if (my_report) {
-          this.menu_actions.addItem("Withdraw my report", () => {
+          this.menu_actions.addItem(_("Withdraw my report"), () => {
             this.withCert(() => {
               Page.user.report(this.row.directory, this.row.site_id, null, null, () => Page.site_lists.update());
             });
           });
         }
         if (my_vouch) {
-          this.menu_actions.addItem("Withdraw my vouch", () => {
+          this.menu_actions.addItem(_("Withdraw my vouch"), () => {
             this.withCert(() => {
               Page.user.vouch(this.row.directory, this.row.site_id, false, () => Page.site_lists.update());
             });
           });
         } else {
-          this.menu_actions.addItem("Vouch: I checked, it's fine", () => {
+          this.menu_actions.addItem(_("Vouch: I checked, it's fine"), () => {
             this.withCert(() => {
               Page.user.vouch(this.row.directory, this.row.site_id, true, () => Page.site_lists.update());
             });
@@ -184,14 +184,14 @@
       }
       if (Page.user.isEditor() && !this.isMine()) {
         this.menu_actions.addItem("---", null);
-        this.menu_actions.addItem("Editor: remove listing", () => {
-          Page.cmd("wrapperConfirm", ["Remove this listing with a signed moderation tombstone? This is for material that abuses or exploits a person; ordinary bad listings are handled by reports.", "Remove"], () => {
+        this.menu_actions.addItem(_("Editor: remove listing"), () => {
+          Page.cmd("wrapperConfirm", [_("Remove this listing with a signed moderation tombstone? This is for material that abuses or exploits a person; ordinary bad listings are handled by reports."), _("Remove")], () => {
             Page.user.moderateDelete(this.row.directory, this.row.site_id, () => Page.site_lists.update());
           });
         });
       }
       if (this.isMine()) {
-        this.menu_actions.addItem("Edit my listing", () => {
+        this.menu_actions.addItem(_("Edit my listing"), () => {
           this.handleEditClick();
         });
       }
@@ -199,11 +199,11 @@
       var owner_dir = this.row.claimed_by;
       var is_owner = owner_dir && owner_dir === Page.user.getUserDirectory();
       if (is_owner) {
-        this.menu_actions.addItem("Manage my xite's listing", () => {
+        this.menu_actions.addItem(_("Manage my xite's listing"), () => {
           this.handleClaimClick();
         });
       } else if (!owner_dir) {
-        this.menu_actions.addItem("I own this xite: claim it", () => {
+        this.menu_actions.addItem(_("I own this xite: claim it"), () => {
           this.handleClaimClick();
         });
       }
@@ -228,12 +228,12 @@
 
     submitReport(reason) {
       this.withCert(() => {
-        Page.cmd("wrapperPrompt", ["Add a short note to your " + Trust.reasonName(reason).toLowerCase() + " report (optional):"], (note) => {
+        Page.cmd("wrapperPrompt", [_("Add a short note to your {reason} report (optional):", {reason: Trust.reasonName(reason).toLowerCase()})], (note) => {
           if (note === false) return;  // cancelled
           if (note && note.length > 200) note = note.substring(0, 200);
           Page.user.report(this.row.directory, this.row.site_id, reason, note || "", (res) => {
             if (res === "ok") {
-              Page.cmd("wrapperNotification", ["done", "Report filed. It is a public, signed record tied to your xId."]);
+              Page.cmd("wrapperNotification", ["done", _("Report filed. It is a public, signed record tied to your xId.")]);
             }
             Page.site_lists.update();
           });
@@ -284,13 +284,13 @@
       if (!this.isMine()) return false;
       if (!this.form_edit) {
         this.form_edit = new Form();
-        this.form_edit.addField("text", "address", "Address", {placeholder: "e.g. epix1abc123...", required: true, validate: this.form_edit.shouldBeZite});
-        this.form_edit.addField("text", "title", "Title", {placeholder: "e.g. Epix Blog", required: true});
-        this.form_edit.addField("text", "description", "Description", {placeholder: "What is this xite about?", required: true});
-        this.form_edit.addField("radio", "category", "Category", {required: true, values: Page.categories});
-        this.form_edit.addField("radio", "language", "Language", {required: true, values: Page.languages, classes: {"radiogroup-lang": true}});
-        this.form_edit.addField("radio", "rating", "Content rating", {required: true, values: [["g", "General"], ["m", "Mature"], ["a", "Adult"]]});
-        this.form_edit.addField("text", "tags", "Tags", {placeholder: "up to 5, comma separated", required: false});
+        this.form_edit.addField("text", "address", _("Address"), {placeholder: _("e.g. epix1abc123..."), required: true, validate: this.form_edit.shouldBeZite});
+        this.form_edit.addField("text", "title", _("Title"), {placeholder: _("e.g. Epix Blog"), required: true});
+        this.form_edit.addField("text", "description", _("Description"), {placeholder: _("What is this xite about?"), required: true});
+        this.form_edit.addField("radio", "category", _("Category"), {required: true, values: Page.translatedCategories()});
+        this.form_edit.addField("radio", "language", _("Language"), {required: true, values: Page.languages, classes: {"radiogroup-lang": true}});
+        this.form_edit.addField("radio", "rating", _("Content rating"), {required: true, values: [["g", _("General")], ["m", _("Mature")], ["a", _("Adult")]]});
+        this.form_edit.addField("text", "tags", _("Tags"), {placeholder: _("up to 5, comma separated"), required: false});
       }
       if (!this.row.rating) this.row.rating = "g";
       this.form_edit.setData(Object.assign({}, this.row));
@@ -304,31 +304,31 @@
       var chips = [];
       if (info) {
         if (info.severity !== "g") {
-          chips.push(h("span.chip.chip-rating.chip-" + info.severity, {key: "sev", title: Trust.labelName(info.severity) + " content"}, Trust.labelName(info.severity)));
+          chips.push(h("span.chip.chip-rating.chip-" + info.severity, {key: "sev", title: _("{label} content", {label: Trust.labelName(info.severity)})}, Trust.labelName(info.severity)));
         }
         if (info.state === "delisted") {
-          chips.push(h("span.chip.chip-state.chip-delisted", {key: "state"}, "Delisted"));
+          chips.push(h("span.chip.chip-state.chip-delisted", {key: "state"}, _("Delisted")));
         } else if (info.state === "warned") {
-          chips.push(h("span.chip.chip-state.chip-warned", {key: "state"}, "Reported"));
+          chips.push(h("span.chip.chip-state.chip-warned", {key: "state"}, _("Reported")));
         } else if (info.state === "mislabeled") {
-          chips.push(h("span.chip.chip-state.chip-mislabeled", {key: "state", title: "The community rates this stricter than its submitter declared"}, "Mislabeled"));
+          chips.push(h("span.chip.chip-state.chip-mislabeled", {key: "state", title: _("The community rates this stricter than its submitter declared")}, _("Mislabeled")));
         } else if (info.state === "verified") {
-          chips.push(h("span.chip.chip-state.chip-verified", {key: "state", title: "Community-confirmed rating"}, "✓"));
+          chips.push(h("span.chip.chip-state.chip-verified", {key: "state", title: _("Community-confirmed rating")}, "✓"));
         }
         if (info.caution) {
-          chips.push(h("span.chip.chip-caution", {key: "caution", title: "This xite has an open report"}, "!"));
+          chips.push(h("span.chip.chip-caution", {key: "caution", title: _("This xite has an open report")}, "!"));
         }
       }
       if (this.row.claimed_by) {
         chips.push(h("span.chip.chip-owned", {key: "owned",
-          title: "The holder of this xite's key claimed this listing (" + this.row.claimed_by + ")"}, "Owner"));
+          title: _("The holder of this xite's key claimed this listing ({owner})", {owner: this.row.claimed_by})}, _("Owner")));
       }
       if (this.row.owner_hidden) {
         chips.push(h("span.chip.chip-withdrawn", {key: "withdrawn",
-          title: "The owner withdrew this xite from the directory. It stays here because it carries open reports."}, "Withdrawn"));
+          title: _("The owner withdrew this xite from the directory. It stays here because it carries open reports.")}, _("Withdrawn")));
       }
       if (this.isNew()) {
-        chips.push(h("span.chip.chip-new", {key: "new"}, "New"));
+        chips.push(h("span.chip.chip-new", {key: "new"}, _("New")));
       }
       return chips;
     }
@@ -340,7 +340,7 @@
       var max_w = Math.max(votes.g, votes.m, votes.a, 1);
       return h("div.evidence", {key: "evidence", enterAnimation: Animation.slideDown, exitAnimation: Animation.slideUp}, [
         h("div.evidence-section", [
-          h("div.evidence-title", "Community rating (weighted)"),
+          h("div.evidence-title", _("Community rating (weighted)")),
           vote_rows.map(function(vr) {
             return h("div.evidence-vote", {key: vr[0]}, [
               h("span.evidence-vote-label", Trust.labelName(vr[0])),
@@ -348,20 +348,20 @@
               h("span.evidence-vote-num", "" + Math.round(vr[1] * 10) / 10)
             ]);
           }),
-          info.settled ? null : h("div.evidence-note", "Not settled yet: needs more votes from established users.")
+          info.settled ? null : h("div.evidence-note", _("Not settled yet: needs more votes from established users."))
         ]),
         info.evidence.reports.length ? h("div.evidence-section", [
-          h("div.evidence-title", "Reports"),
+          h("div.evidence-title", _("Reports")),
           info.evidence.reports.map(function(r, i) {
             return h("div.evidence-report", {key: "r" + i}, [
               h("span.evidence-reason", Trust.reasonName(r.reason)),
-              h("span.evidence-author", " by " + Text.formatUsername(r.author)),
+              h("span.evidence-author", " " + _("by {who}", {who: Text.formatUsername(r.author)})),
               r.note ? h("div.evidence-note", "“" + r.note + "”") : null
             ]);
           })
         ]) : null,
         info.evidence.vouches.length ? h("div.evidence-section", [
-          h("div.evidence-title", "Vouches"),
+          h("div.evidence-title", _("Vouches")),
           info.evidence.vouches.map(function(v, i) {
             return h("span.evidence-vouch", {key: "v" + i}, Text.formatUsername(v.author));
           })
@@ -394,18 +394,18 @@
           return h("span.site-tag", {key: t}, t);
         })) : null,
         (state === "warned" || state === "delisted") ? h("div.site-banner", [
-          h("span.site-banner-text", state === "delisted" ? "Delisted by community reports" : "Reported by the community"),
-          h("a.site-banner-why", {href: "#Evidence", onclick: this.handleEvidenceClick}, this.show_evidence ? "hide" : "why?")
+          h("span.site-banner-text", state === "delisted" ? _("Delisted by community reports") : _("Reported by the community")),
+          h("a.site-banner-why", {href: "#Evidence", onclick: this.handleEvidenceClick}, this.show_evidence ? _("hide") : _("why?"))
         ]) : null,
         h("div.site-foot", [
           this.row.claimed_by
-            ? h("span.site-by.owned", {title: "Owner-managed: " + this.row.claimed_by + " proved control of this xite's key. Originally listed by " + this.row.directory},
+            ? h("span.site-by.owned", {title: _("Owner-managed: {owner} proved control of this xite's key. Originally listed by {submitter}", {owner: this.row.claimed_by, submitter: this.row.directory})},
                 Text.formatUsername(this.row.claimed_by))
-            : h("span.site-by", {classes: {untrusted: untrusted_submitter}, title: "Listed by " + (this.row.cert_user_id || this.row.directory)},
+            : h("span.site-by", {classes: {untrusted: untrusted_submitter}, title: _("Listed by {who}", {who: this.row.cert_user_id || this.row.directory})},
                 Text.formatUsername(this.row.directory)),
           h("span.site-foot-right", [
-            this.row.peers ? h("span.site-peers", {title: this.row.peers + " peers seeding"}, [h("span.dot-live"), " " + this.row.peers]) : null,
-            h("span.rate-group", {title: "Rate the content: General / Mature / Adult"}, RATING_LABELS.map((rl) => {
+            this.row.peers ? h("span.site-peers", {title: _n(this.row.peers, "{n} peer seeding", "{n} peers seeding")}, [h("span.dot-live"), " " + this.row.peers]) : null,
+            h("span.rate-group", {title: _("Rate the content: General / Mature / Adult")}, RATING_LABELS.map((rl) => {
               return h("a.rate", {key: rl[0], href: "#Rate", "data-label": rl[0], onclick: this.handleRateClick,
                 classes: {active: my_rating === rl[0], mine_declared: this.isMine() && this.row.rating === rl[0]}}, rl[1]);
             })),
@@ -414,7 +414,7 @@
               star_count ? h("span.num", " " + star_count) : null
             ]),
             h("span.actions-wrap", [
-              h("a.actions", {href: "#Actions", onmousedown: this.handleActionsClick, onclick: Page.returnFalse, title: "Report, vouch, or edit"}, "⋯"),
+              h("a.actions", {href: "#Actions", onmousedown: this.handleActionsClick, onclick: Page.returnFalse, title: _("Report, vouch, or edit")}, "⋯"),
               this.menu_actions.render(".actions-menu")
             ])
           ])

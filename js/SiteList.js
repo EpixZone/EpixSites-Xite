@@ -40,7 +40,7 @@
       }
       return h("div.sitelist", {key: this.row.id, classes: {empty: this.sites.length === 0, hidden: this.isHidden(), selected: Page.site_lists.filter_category === this.row.id, nolimit: this.nolimit, clear: clear}}, [
         h("a.categoryname", {href: "?Category:" + this.row.id + ":" + Text.toUrl(this.row.title), onclick: Page.handleLinkClick}, [
-          this.row.title,
+          _(this.row.title),
           h("span.categorycount", " " + this.sites.length)
         ]),
         h("div.sites", [
@@ -48,7 +48,7 @@
             return item.render();
           }),
           this.sites.length > limit
-            ? h("a.more", {href: "?Category:" + this.row.id + ":" + Text.toUrl(this.row.title), onclick: this.handleMoreClick, enterAnimation: Animation.slideDown, exitAnimation: Animation.slideUp}, "Show more…")
+            ? h("a.more", {href: "?Category:" + this.row.id + ":" + Text.toUrl(this.row.title), onclick: this.handleMoreClick, enterAnimation: Animation.slideDown, exitAnimation: Animation.slideUp}, _("Show more…"))
             : null
         ])
       ]);

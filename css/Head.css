@@ -26,7 +26,10 @@
 .head-inner {
   display: flex; align-items: center; gap: 16px;
   max-width: 1280px; margin: 0 auto;
-  padding: 14px 80px 10px 20px; /* right padding clears the fixbutton (circle spans up to ~79px from the right edge) */
+  padding: 14px 20px 10px;
+  /* The wrapper's fixbutton floats at the PHYSICAL top right whichever way
+     the page reads, so its clearance must not mirror with the layout. */
+  padding-right: 80px; /* right padding clears the fixbutton (circle spans up to ~79px from the right edge) */
 }
 
 .logo { display: flex; align-items: center; gap: 10px; flex: none; }
@@ -39,11 +42,11 @@
   display: flex; align-items: center;
 }
 .searchbox-icon {
-  position: absolute; left: 14px; width: 9px; height: 9px;
+  position: absolute; inset-inline-start: 14px; width: 9px; height: 9px;
   border: 2px solid var(--muted); border-radius: 50%; pointer-events: none;
 }
 .searchbox-icon::after {
-  content: ""; position: absolute; left: 8px; top: 8px;
+  content: ""; position: absolute; inset-inline-start: 8px; top: 8px;
   width: 6px; height: 2px; background: var(--muted);
   border-radius: 2px; transform: rotate(45deg); transform-origin: 0 0;
 }
@@ -61,7 +64,7 @@
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .searchbox-clear {
-  position: absolute; right: 6px; width: 26px; height: 26px;
+  position: absolute; inset-inline-end: 6px; width: 26px; height: 26px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; color: var(--muted); border-radius: 50%;
 }
@@ -90,7 +93,7 @@
 }
 .tab:hover { background: var(--surface2); color: var(--text); }
 .tab.active { background: var(--accent-soft); color: var(--accent); }
-.tab-audit { margin-left: auto; font-weight: 500; color: var(--border-strong); }
+.tab-audit { margin-inline-start: auto; font-weight: 500; color: var(--border-strong); }
 .tab-audit:hover { color: var(--muted); }
 .tab-audit.active { background: var(--surface2); color: var(--muted); }
 .syncnote { font-size: 12px; color: var(--muted); font-style: italic; }
@@ -98,5 +101,5 @@
 @media (max-width: 719px) {
   .head-inner { flex-wrap: wrap; padding-right: 80px; }
   .searchbox { order: 3; flex-basis: 100%; max-width: none; }
-  .adult-filter { margin-left: auto; }
+  .adult-filter { margin-inline-start: auto; }
 }

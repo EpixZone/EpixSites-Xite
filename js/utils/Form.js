@@ -89,7 +89,7 @@
 
     shouldBeZite(value) {
       if (!value.match(/(epix1[a-z0-9]{38,}|[A-Za-z0-9\.-]{2,99}\.[a-z]+)/)) {
-        return "Invalid site address: only EpixNet addresses supported";
+        return _("Invalid site address: only EpixNet addresses supported");
       }
     }
 
@@ -102,7 +102,7 @@
         var props = entry[1];
         var childs = entry[2];
         if (props.required && !props.value) {
-          this.invalid[name] = "This field is required";
+          this.invalid[name] = _("This field is required");
           if (this.nodes[props.name]) Animation.shake(this.nodes[props.name]);
           valid = false;
         } else if (props.validate) {
@@ -150,7 +150,7 @@
     }
 
     handleDeleteClick() {
-      Page.cmd("wrapperConfirm", ["Are you sure you want to delete this item?", "Delete"], () => {
+      Page.cmd("wrapperConfirm", [_("Are you sure you want to delete this item?"), _("Delete")], () => {
         this.deleteRow((res) => {
           if (res === "ok") {
             this.hidden = true;
@@ -205,9 +205,9 @@
       return h("div.form-takeover-container", {key: this, afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover" + classname, {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp},
           this.fields.map(this.renderField),
-          h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancelClick}, "Cancel"),
-          this.deleteRow ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, "Delete") : null,
-          h("a.button.button-submit", {href: "#Modify", onclick: this.handleSubmitClick}, "Modify")
+          h("a.cancel.link", {href: "#Cancel", onclick: this.handleCancelClick}, _("Cancel")),
+          this.deleteRow ? h("a.button.button-submit.button-outline", {href: "#Delete", onclick: this.handleDeleteClick}, _("Delete")) : null,
+          h("a.button.button-submit", {href: "#Modify", onclick: this.handleSubmitClick}, _("Modify"))
         )
       ]);
     }

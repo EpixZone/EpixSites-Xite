@@ -1,10 +1,12 @@
 (function() {
 
-  var RATING_VALUES = [
-    ["g", "General – fine for everyone"],
-    ["m", "Mature – strong language, violence, gambling"],
-    ["a", "Adult – explicit content, 18+"]
-  ];
+  function ratingValues() {
+    return [
+      ["g", _("General – fine for everyone")],
+      ["m", _("Mature – strong language, violence, gambling")],
+      ["a", _("Adult – explicit content, 18+")]
+    ];
+  }
 
   class SiteAdd {
     constructor() {
@@ -117,7 +119,7 @@
       // rather than accepting a submission that would be hidden on arrival.
       var claim = Page.site_lists.claims[address.toLowerCase()];
       if (claim && (claim.hidden === 1 || claim.hidden === true)) {
-        return "This xite's owner has withdrawn it from the directory.";
+        return _("This xite's owner has withdrawn it from the directory.");
       }
       var row = this.site_db[address.toLowerCase()];
       if (!row) return null;
@@ -125,15 +127,15 @@
       if (info && info.state === "delisted") {
         var reasons = {};
         info.evidence.reports.forEach(function(r) { reasons[Trust.reasonName(r.reason)] = true; });
-        return "This address was delisted for: " + Object.keys(reasons).join(", ") + ". It cannot be resubmitted.";
+        return _("This address was delisted for: {reasons}. It cannot be resubmitted.", {reasons: Object.keys(reasons).join(", ")});
       }
-      return "This site is already listed as \"" + row.title + "\"";
+      return _("This site is already listed as “{title}”", {title: row.title});
     }
 
     shouldBeTags(value) {
       if (!value) return null;
       if (value.split(",").length > 5) {
-        return "Up to 5 tags, separated by commas";
+        return _("Up to 5 tags, separated by commas");
       }
       return null;
     }
@@ -156,40 +158,40 @@
 
     render() {
       return h("div.form.form-siteadd", {updateAnimation: Animation.height, classes: {hidden: Page.site_lists.state !== "siteadd"}}, [
-        h("div.form-siteadd-title", "Submit a xite"),
-        h("div.form-siteadd-note", "Listings are public, signed records tied to your xId. You stand behind what you submit."),
+        h("div.form-siteadd-title", _("Submit a xite")),
+        h("div.form-siteadd-note", _("Listings are public, signed records tied to your xId. You stand behind what you submit.")),
         h("div.formfield",
-          this.form.h("label.title", {for: "address"}, "Address"),
-          this.form.h("input.text", {type: "text", name: "address", placeholder: "e.g. epix1abc123... or name.epix", required: true, validate: [this.form.shouldBeZite, this.shouldBeUniqueSite]})
+          this.form.h("label.title", {for: "address"}, _("Address")),
+          this.form.h("input.text", {type: "text", name: "address", placeholder: _("e.g. epix1abc123... or name.epix"), required: true, validate: [this.form.shouldBeZite, this.shouldBeUniqueSite]})
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "title"}, "Title"),
-          this.form.h("input.text", {type: "text", name: "title", placeholder: "e.g. Epix Blog", required: true})
+          this.form.h("label.title", {for: "title"}, _("Title")),
+          this.form.h("input.text", {type: "text", name: "title", placeholder: _("e.g. Epix Blog"), required: true})
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "description"}, "Description"),
-          this.form.h("input.text", {type: "text", name: "description", placeholder: "What is this xite about?", required: true})
+          this.form.h("label.title", {for: "description"}, _("Description")),
+          this.form.h("input.text", {type: "text", name: "description", placeholder: _("What is this xite about?"), required: true})
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "category"}, "Category"),
-          this.renderRadio("category", Page.categories)
+          this.form.h("label.title", {for: "category"}, _("Category")),
+          this.renderRadio("category", Page.translatedCategories())
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "rating"}, "Content rating"),
-          this.renderRadio("rating", RATING_VALUES, ".radiogroup-rating"),
-          h("div.field-note", "Declare it honestly: the community votes on the real rating, and a mislabeled listing is marked and downranked.")
+          this.form.h("label.title", {for: "rating"}, _("Content rating")),
+          this.renderRadio("rating", ratingValues(), ".radiogroup-rating"),
+          h("div.field-note", _("Declare it honestly: the community votes on the real rating, and a mislabeled listing is marked and downranked."))
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "language"}, "Language"),
+          this.form.h("label.title", {for: "language"}, _("Language")),
           this.renderRadio("language", Page.languages.map(function(l) { return [l, l]; }), ".radiogroup-lang")
         ),
         h("div.formfield",
-          this.form.h("label.title", {for: "tags"}, "Tags"),
-          this.form.h("input.text", {type: "text", name: "tags", placeholder: "optional, up to 5, comma separated", required: false, validate: this.shouldBeTags})
+          this.form.h("label.title", {for: "tags"}, _("Tags")),
+          this.form.h("input.text", {type: "text", name: "tags", placeholder: _("optional, up to 5, comma separated"), required: false, validate: this.shouldBeTags})
         ),
         h("div.form-siteadd-actions", [
-          h("a.cancel.link", {href: "#Cancel", onclick: this.close}, "Cancel"),
-          h("a.button.button-submit", {href: "#Submit", onclick: this.handleSubmit, classes: {loading: this.submitting}}, "Submit listing")
+          h("a.cancel.link", {href: "#Cancel", onclick: this.close}, _("Cancel")),
+          h("a.button.button-submit", {href: "#Submit", onclick: this.handleSubmit, classes: {loading: this.submitting}}, _("Submit listing"))
         ])
       ]);
     }
