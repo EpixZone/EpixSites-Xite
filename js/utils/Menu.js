@@ -46,7 +46,9 @@
       var margin = 8;
       var gap = 6;
 
-      var left = rect.right - width;
+      // Align to the edge the reader's eye starts from: the anchor's right
+      // in a left-to-right layout, its left when the page is mirrored.
+      var left = window.isRtl && window.isRtl() ? rect.left : rect.right - width;
       if (left + width > window.innerWidth - margin) {
         left = window.innerWidth - margin - width;
       }

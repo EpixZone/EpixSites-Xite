@@ -146,12 +146,12 @@ h2.empty {
 }
 .tip::after {
   content: attr(data-tip);
-  position: absolute; top: calc(100% + 8px); right: 0; z-index: 70;
+  position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 70;
   max-width: 260px; width: max-content; padding: 7px 10px;
   background: var(--surface); color: var(--text);
   border: 1px solid var(--border); border-radius: 6px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  font-size: 12px; font-weight: 500; line-height: 1.4; text-align: left;
+  font-size: 12px; font-weight: 500; line-height: 1.4; text-align: start;
   opacity: 0; transform: translateY(-3px); pointer-events: none;
   transition: opacity 0.12s ease-out 0.15s, transform 0.12s ease-out 0.15s;
 }
@@ -159,7 +159,7 @@ h2.empty {
 /* Opened by long press on touch, where hover never happens. */
 .tip.tip-open::after { opacity: 1; transform: translateY(0); transition-delay: 0s; }
 /* Anchored to the left edge instead, for controls near the viewport's left. */
-.tip.tip-left::after { right: auto; left: 0; }
+.tip.tip-left::after { inset-inline-end: auto; inset-inline-start: 0; }
 @media (prefers-reduced-motion: reduce) {
   .tip::after { transform: none; }
 }
@@ -224,7 +224,10 @@ h2.empty {
 .head-inner {
   display: flex; align-items: center; gap: 16px;
   max-width: 1280px; margin: 0 auto;
-  padding: 14px 80px 10px 20px; /* right padding clears the fixbutton (circle spans up to ~79px from the right edge) */
+  padding: 14px 20px 10px;
+  /* The wrapper's fixbutton floats at the PHYSICAL top right whichever way
+     the page reads, so its clearance must not mirror with the layout. */
+  padding-right: 80px; /* right padding clears the fixbutton (circle spans up to ~79px from the right edge) */
 }
 
 .logo { display: flex; align-items: center; gap: 10px; flex: none; }
@@ -237,11 +240,11 @@ h2.empty {
   display: flex; align-items: center;
 }
 .searchbox-icon {
-  position: absolute; left: 14px; width: 9px; height: 9px;
+  position: absolute; inset-inline-start: 14px; width: 9px; height: 9px;
   border: 2px solid var(--muted); border-radius: 50%; pointer-events: none;
 }
 .searchbox-icon::after {
-  content: ""; position: absolute; left: 8px; top: 8px;
+  content: ""; position: absolute; inset-inline-start: 8px; top: 8px;
   width: 6px; height: 2px; background: var(--muted);
   border-radius: 2px; transform: rotate(45deg); transform-origin: 0 0;
 }
@@ -259,7 +262,7 @@ h2.empty {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .searchbox-clear {
-  position: absolute; right: 6px; width: 26px; height: 26px;
+  position: absolute; inset-inline-end: 6px; width: 26px; height: 26px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; color: var(--muted); border-radius: 50%;
 }
@@ -288,7 +291,7 @@ h2.empty {
 }
 .tab:hover { background: var(--surface2); color: var(--text); }
 .tab.active { background: var(--accent-soft); color: var(--accent); }
-.tab-audit { margin-left: auto; font-weight: 500; color: var(--border-strong); }
+.tab-audit { margin-inline-start: auto; font-weight: 500; color: var(--border-strong); }
 .tab-audit:hover { color: var(--muted); }
 .tab-audit.active { background: var(--surface2); color: var(--muted); }
 .syncnote { font-size: 12px; color: var(--muted); font-style: italic; }
@@ -296,7 +299,7 @@ h2.empty {
 @media (max-width: 719px) {
   .head-inner { flex-wrap: wrap; padding-right: 80px; }
   .searchbox { order: 3; flex-basis: 100%; max-width: none; }
-  .adult-filter { margin-left: auto; }
+  .adult-filter { margin-inline-start: auto; }
 }
 
 
@@ -308,7 +311,7 @@ h2.empty {
   display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
 }
 .toolbar-right {
-  position: relative; margin-left: auto;
+  position: relative; margin-inline-start: auto;
   display: flex; align-items: center; gap: 14px;
 }
 .toolbar-filter { font-size: 12.5px; color: var(--muted); }
@@ -333,7 +336,7 @@ h2.empty {
   color: var(--muted);
 }
 .categoryname:hover { color: var(--accent); }
-.categorycount { font-weight: 500; color: var(--border-strong); margin-left: 4px; }
+.categorycount { font-weight: 500; color: var(--border-strong); margin-inline-start: 4px; }
 
 .sitelist .sites { display: flex; flex-direction: column; gap: 10px; }
 
@@ -363,9 +366,9 @@ h2.empty {
 }
 .site-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
 
-.site-card.state-warned { border-left: 3px solid var(--warning-strong); }
-.site-card.state-delisted { border-left: 3px solid var(--danger); }
-.site-card.state-mislabeled { border-left: 3px solid var(--accent); }
+.site-card.state-warned { border-inline-start: 3px solid var(--warning-strong); }
+.site-card.state-delisted { border-inline-start: 3px solid var(--danger); }
+.site-card.state-mislabeled { border-inline-start: 3px solid var(--accent); }
 
 .site-head { display: flex; align-items: flex-start; gap: 8px; }
 .site-title {
@@ -373,7 +376,7 @@ h2.empty {
   overflow-wrap: anywhere;
 }
 .site-title:hover { color: var(--accent); }
-.site-chips { margin-left: auto; display: flex; gap: 5px; flex: none; cursor: pointer; }
+.site-chips { margin-inline-start: auto; display: flex; gap: 5px; flex: none; cursor: pointer; }
 
 .chip {
   display: inline-flex; align-items: center;
@@ -413,7 +416,7 @@ h2.empty {
   font-size: 12px; font-weight: 600;
 }
 .state-delisted .site-banner { background: var(--danger-soft); color: var(--danger); }
-.site-banner-why { margin-left: auto; font-weight: 700; text-decoration: underline; }
+.site-banner-why { margin-inline-start: auto; font-weight: 700; text-decoration: underline; }
 
 .site-foot {
   display: flex; align-items: center; gap: 10px;
@@ -422,7 +425,7 @@ h2.empty {
 .site-by { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
 .site-by.untrusted { color: var(--border-strong); font-style: italic; }
 .site-by.owned { color: var(--accent); }
-.site-foot-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.site-foot-right { margin-inline-start: auto; display: flex; align-items: center; gap: 10px; }
 
 .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
 .site-peers { display: inline-flex; align-items: center; gap: 4px; }
@@ -431,10 +434,10 @@ h2.empty {
 .rate {
   width: 22px; height: 20px; display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; font-weight: 700; color: var(--border-strong);
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   transition: background 0.1s, color 0.1s;
 }
-.rate:last-child { border-right: none; }
+.rate:last-child { border-inline-end: none; }
 .rate:hover { background: var(--surface2); color: var(--text); }
 .rate.mine_declared { color: var(--muted); text-decoration: underline; }
 .rate-group .rate:nth-child(1).active { background: var(--success-soft); color: var(--success); }
@@ -476,7 +479,7 @@ h2.empty {
 .evidence-vote-fill.fill-g { background: var(--success); }
 .evidence-vote-fill.fill-m { background: var(--warning-strong); }
 .evidence-vote-fill.fill-a { background: var(--danger); }
-.evidence-vote-num { width: 28px; flex: none; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.evidence-vote-num { width: 28px; flex: none; text-align: end; color: var(--muted); font-variant-numeric: tabular-nums; }
 .evidence-note { color: var(--muted); font-style: italic; margin-top: 3px; }
 .evidence-report { margin: 4px 0; }
 .evidence-reason { font-weight: 600; color: var(--danger); }
@@ -581,7 +584,7 @@ input.text.invalid { border-color: var(--danger); }
   padding: 22px; width: 100%; max-width: 640px;
   display: flex; flex-direction: column; gap: 14px;
 }
-.form-takeover .cancel { margin-right: auto; }
+.form-takeover .cancel { margin-inline-end: auto; }
 
 /* Ownership claim takeover */
 .form-claim { max-width: 680px; gap: 18px; }
@@ -638,7 +641,7 @@ input.text.invalid { border-color: var(--danger); }
 }
 .claim-fields { display: flex; flex-direction: column; gap: 14px; }
 .claim-actions { display: flex; align-items: center; gap: 14px; justify-content: flex-end; }
-.claim-actions .cancel { margin-right: auto; }
+.claim-actions .cancel { margin-inline-end: auto; }
 
 .hide-toggle { display: inline-flex; align-items: center; gap: 9px; font-size: 13.5px; }
 .hide-box {

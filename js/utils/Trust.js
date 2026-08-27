@@ -95,11 +95,11 @@
     }
 
     labelName(label) {
-      return LABELS[label] || LABELS["g"];
+      return _(LABELS[label] || LABELS["g"]);
     }
 
     reasonName(reason) {
-      return REASONS[reason] || reason;
+      return REASONS[reason] ? _(REASONS[reason]) : reason;
     }
 
     reasons() {

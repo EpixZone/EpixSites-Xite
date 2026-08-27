@@ -227,7 +227,7 @@
       if (!terms.length) return [];
       var cat_names = {};
       for (var ci = 0; ci < Page.categories.length; ci++) {
-        cat_names[Page.categories[ci][0]] = ("" + Page.categories[ci][1]).toLowerCase();
+        cat_names[Page.categories[ci][0]] = ("" + Page.categories[ci][1] + " " + _(Page.categories[ci][1])).toLowerCase();
       }
       var trust = this.trust;
       var scored = [];
@@ -310,8 +310,8 @@
         items.push(" ");
       }
       return h("div.menu-radio",
-        h("div", "Site languages: "),
-        h("a.all", {href: "#all", onclick: this.handleFilterLanguageClick, value: "all", classes: {selected: isEmpty(this.filter_lang)}}, "Show all"),
+        h("div", _("Site languages:") + " "),
+        h("a.all", {href: "#all", onclick: this.handleFilterLanguageClick, value: "all", classes: {selected: isEmpty(this.filter_lang)}}, _("Show all")),
         items
       );
     }
@@ -339,7 +339,7 @@
 
     formatFilterTitle() {
       if (isEmpty(this.filter_lang)) {
-        return "All languages";
+        return _("All languages");
       }
       var langs = [];
       for (var lang in this.filter_lang) {
@@ -367,13 +367,13 @@
 
     renderToolbar() {
       return h("div.toolbar", [
-        h("a.toolbar-submit.button.button-small", {href: "#Submit", onclick: this.handleSiteAddClick, classes: {active: this.state === "siteadd"}}, "+ Submit a xite"),
+        h("a.toolbar-submit.button.button-small", {href: "#Submit", onclick: this.handleSiteAddClick, classes: {active: this.state === "siteadd"}}, _("+ Submit a xite")),
         h("span.toolbar-right", [
           h("a.toolbar-filter", {href: "#Filters", onmousedown: this.handleFiltersClick, onclick: Page.returnFalse}, this.formatFilterTitle()),
           this.menu_filters.render(".filter"),
           Page.site_info && Page.site_info.cert_user_id
-            ? h("a.toolbar-user", {href: "#Select", onclick: Page.user.certSelect, title: "Switch identity"}, Page.site_info.cert_user_id.replace("@xid.epix", ""))
-            : h("a.toolbar-user.anon", {href: "#Select", onclick: Page.user.certSelect}, "Connect xId")
+            ? h("a.toolbar-user", {href: "#Select", onclick: Page.user.certSelect, title: _("Switch identity")}, Page.site_info.cert_user_id.replace("@xid.epix", ""))
+            : h("a.toolbar-user.anon", {href: "#Select", onclick: Page.user.certSelect}, _("Connect xId"))
         ])
       ]);
     }
@@ -394,23 +394,22 @@
       return h("div.flagged-view", [
         h("div.flagged-note", [
           this.flagged_count
-            ? (this.flagged_count === 1 ? "1 listing is " : this.flagged_count + " listings are ") +
-              "reported or delisted. "
+            ? _n(this.flagged_count, "{n} listing is reported or delisted.", "{n} listings are reported or delisted.") + " "
             : "",
-          "Nothing is silently removed: every one stays auditable here, with its evidence."
+          _("Nothing is silently removed: every one stays auditable here, with its evidence.")
         ]),
         this.flagged_list.items.length
           ? h("div.sites.sites-flat", this.flagged_list.items.map(function(item) { return item.render(); }))
-          : h("h2.empty", "No flagged listings. Good.")
+          : h("h2.empty", _("No flagged listings. Good."))
       ]);
     }
 
     renderSearch() {
       return h("div.search-view", [
-        h("div.search-summary", this.search_list.items.length + " result" + (this.search_list.items.length === 1 ? "" : "s") + " for “" + this.search_text + "”"),
+        h("div.search-summary", _n(this.search_list.items.length, "{n} result for “{q}”", "{n} results for “{q}”", {q: this.search_text})),
         this.search_list.items.length
           ? h("div.sites.sites-flat", this.search_list.items.map(function(item) { return item.render(); }))
-          : h("h2.empty", "Nothing found. Try fewer or shorter words.")
+          : h("h2.empty", _("Nothing found. Try fewer or shorter words."))
       ]);
     }
 
@@ -447,10 +446,10 @@
         }
         if (!any) {
           body = h("div.empty-state", [
-            h("div.empty-state-title", this.num_total === 0 ? "The directory is empty" : "Nothing matches your filters"),
+            h("div.empty-state-title", this.num_total === 0 ? _("The directory is empty") : _("Nothing matches your filters")),
             h("div.empty-state-text", this.num_total === 0
-              ? "Be the first: submit a xite and stand behind it with your xId."
-              : "Loosen the language filter, or switch safe mode off to see more.")
+              ? _("Be the first: submit a xite and stand behind it with your xId.")
+              : _("Loosen the language filter, or show adult-rated xites, to see more."))
           ]);
         } else {
           body = h("div.sitelists", this.site_lists.map(function(site_list) {

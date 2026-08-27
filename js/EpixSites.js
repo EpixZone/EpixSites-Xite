@@ -80,6 +80,14 @@
       });
     }
 
+    // Category names come from the signed content.json, so they are data
+    // rather than source literals; translate them where they are shown.
+    translatedCategories() {
+      return this.categories.map(function(pair) {
+        return [pair[0], _(pair[1])];
+      });
+    }
+
     setFormEdit(form_edit) {
       form_edit.hidden = false;
       this.form_edit = form_edit;
