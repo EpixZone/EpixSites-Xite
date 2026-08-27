@@ -22,14 +22,25 @@
     adult_frac: 0.35,
     mature_abs: 1,
     mature_frac: 0.5,
-    sev: {"malware": 1, "illegal": 1, "scam": 1, "dead": 0, "spam": 0}
+    sev: {"malware": 1, "abuse": 1, "scam": 1, "dead": 0, "spam": 0}
   };
 
   var SEV_RANK = {"g": 0, "m": 1, "a": 2};
   var LABELS = {"g": "General", "m": "Mature", "a": "Adult"};
+  // Report reasons describe HARM, never legal status. "Illegal" would import
+  // a jurisdiction it does not name: on a global network almost anything is
+  // unlawful somewhere, so that label lets a brigade truthfully report a
+  // political xite, a harm-reduction guide or a gambling site and erase it
+  // for everyone. Every reason here is one any reader can judge without
+  // knowing any country's law, and the delisting ones turn on a victim or a
+  // technical fact rather than a statute.
+  //
+  // Content that is unlawful in a particular place is a LOCAL matter: a node
+  // operator's own filtering, the gateway's content filter, or a personal
+  // mute. It is deliberately not something a global vote can act on.
   var REASONS = {
     "malware": "Malware",
-    "illegal": "Illegal content",
+    "abuse": "Abuse or exploitation of a person",
     "scam": "Scam or phishing",
     "dead": "Dead or broken",
     "spam": "Spam or duplicate"
