@@ -39,9 +39,7 @@
         }
 
 	},
-	"feeds": {
-		"Sites": "SELECT title AS title, description AS body, 'site' AS type, date_added, '/' || address AS url FROM site LEFT JOIN json USING (json_id)"
-	},
+	"feeds": {},
 	"tables": {
 		"site": {
 			"cols": [

@@ -11,7 +11,7 @@ Search and discover xites on [EpixNet](https://epixnet.io). A decentralized dire
 - Reports with narrow reason codes (malware, abuse or exploitation of a person, scam, dead, spam) plus vouches as counter-reports; only the first three can warn or delist
 - Reasons describe harm, never legal status: what is unlawful in one country is lawful in another, so a global vote never turns on a statute. Locally unlawful content is a node operator's own filtering concern
 - Safe mode (on by default) hides adult-rated listings
-- Flagged audit tab: nothing is silently removed, every warned or delisted listing stays inspectable with its evidence
+- Flagged audit tab: warned listings retain their evidence; removed entries show only a removal key, bounded reason, and decision source
 - Every card names its submitter ("Submitted by name.epix"): listings are public, signed records tied to a paid xId
 - Stars weighted by identity: only chain-registered name.epix identities carry vote weight
 - Editor moderation via signed tombstones (the EpixTalk signers pattern), no site-key pasting
@@ -72,3 +72,44 @@ Records carry `target_dir` + `target_site_id` explicitly, so community judgments
 ## License
 
 MIT
+
+## Removal policy
+
+The directory uses the shared signed removal snapshot configured in its signed
+manifest. Submissions, address changes, ownership claims, opening a listing,
+and incoming catalogue rows pass through the same policy check. A missing,
+invalid, stale, or incomplete snapshot pauses additions and hides unverified
+listing projections until verification succeeds. The Retry verification button
+reloads the snapshot.
+
+Active registry removals remain in the Flagged view even when the original
+listing is absent. Community-delisted listings use the same address-free card,
+with their decision source stated separately. Community delisting is recomputed
+from current reports; the app does not automatically publish those decisions
+into the owner registry. If the last listing for an address disappears, its
+community removal cannot be reconstructed from listing-keyed reports alone.
+Blocking future re-additions durably requires an entry in the signed owner
+registry. Registry reinstatement does not erase an independent community
+delisting while its report threshold is still met. The card contains only a
+hashed removal key, a bounded reason, and status. Ordinary reports, Adult/Mature labels,
+personal filtering, and owner withdrawal do not become removal decisions.
+
+The app checks addresses rather than listing IDs, so another listing ID does not
+bypass a known removal. Names are accepted only after the node has a verified
+canonical resolution; otherwise use a canonical Xite address. An accepted name
+is saved as its canonical address.
+
+The legacy SQL feed descriptor is disabled: it could emit raw addresses and
+metadata without the browser's verified policy check. Do not restore an
+address-bearing feed until its producer applies the same policy. Deployment
+also needs an owner-signed manifest with the shared scripts and policy snapshot;
+a source merge alone does not publish the Xite.
+
+These checks govern participating clients. They do not erase already replicated
+signed records, exports, cached addresses, or older versions, and they do not
+prevent another client from using the underlying node directly. Public hashed
+keys can be matched against already-known candidate addresses.
+
+Run the application regressions with `node --test tests/*.test.cjs`.
+See [registry operation and deployment](docs/removals.md) for publishing removals
+and reinstatements without adding target addresses to the public registry.

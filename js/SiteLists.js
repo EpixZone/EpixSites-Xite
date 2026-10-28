@@ -15,6 +15,8 @@
       this.trust = {};
       this.claims = {};
       this.flagged_count = 0;
+      this.removals = [];
+      this.policy_unavailable = true;
       this.need_update = false;
       this.loaded = false;
       this.num_total = null;
@@ -26,6 +28,7 @@
       this.renderFilterLanguage = this.renderFilterLanguage.bind(this);
       this.handleFiltersClick = this.handleFiltersClick.bind(this);
       this.handleSiteAddClick = this.handleSiteAddClick.bind(this);
+      this.handlePolicyRetry = this.handlePolicyRetry.bind(this);
       this.formatFilterTitle = this.formatFilterTitle.bind(this);
       this.setFilterCategory = this.setFilterCategory.bind(this);
       this.getVisibleSiteLists = this.getVisibleSiteLists.bind(this);
@@ -67,6 +70,7 @@
     // All ordering, filtering, and state logic happens client-side over these
     // rows, so search and browse stay consistent with the trust states.
     update() {
+      var generation = this.update_generation = (this.update_generation || 0) + 1;
       var results = {};
       var pending = 5;
       var done = () => {
@@ -76,7 +80,11 @@
         // Verifying is a websocket round trip, so it happens once per
         // signature here, before the deterministic pass consumes the result.
         Claim.verifyAll(results.claims || [], () => {
-          this.applyResults(results);
+          var apply = () => { if (generation === this.update_generation) this.applyResults(results); };
+          if (!window.RemovalPolicy) return apply();
+          RemovalPolicy.ready().then(() => RemovalPolicy.prepare((Array.isArray(results.sites) ? results.sites : []).map(function(row) {
+            return row.address;
+          }))).then(apply, apply);
         });
       };
 
@@ -136,12 +144,22 @@
         row.date_sort = row.date_added > now + 120 ? 0 : row.date_added;
         rows.push(row);
       }
-      this.trust = Trust.compute(rows, results.ratings || [], results.reports || [], results.stars || []);
-      this.rows = rows;
+      var trust = Trust.compute(rows, results.ratings || [], results.reports || [], results.stars || []);
+      SiteRemoval.remember(rows, trust);
+      this.trust = {};
+      this.policy_unavailable = SiteRemoval.check(Page.site_info && Page.site_info.address).status === "verification_unavailable";
+      this.rows = rows.filter((row) => {
+        var decision = SiteRemoval.check(row.address);
+        if (decision.status === "verification_unavailable") this.policy_unavailable = true;
+        if (decision.status !== "allowed" || trust[row.uri].state === "delisted") return false;
+        this.trust[row.uri] = trust[row.uri];
+        return true;
+      });
+      this.removals = SiteRemoval.records();
       this.distribute();
 
       this.loaded = true;
-      this.num_total = rows.length;
+      this.num_total = this.rows.length;
       this.logEnd("Sites", "found: " + this.num_total);
       Page.on_loaded.resolve();
       Page.projector.scheduleRender();
@@ -151,6 +169,7 @@
     // owner, and passes safe mode.
     isBrowsable(row) {
       var info = this.trust[row.uri];
+      if (SiteRemoval.check(row.address).status !== "allowed") return false;
       if (info && info.state === "delisted") return false;
       if (row.owner_hidden) return false;
       if (this.hide_adult) {
@@ -201,22 +220,21 @@
         this.search_list.sync([]);
       }
 
-      // Flagged audit view: warned + delisted, nothing hidden, evidence shown.
+      // Warned entries retain their evidence. Removals use separate, bounded records.
       var flagged = [];
-      var delisted_count = 0;
       for (i = 0; i < this.rows.length; i++) {
         row = this.rows[i];
         var info = this.trust[row.uri];
         // Owner withdrawal removes a listing from browse and search, but a
         // reported one stays auditable here: hiding a xite must never be a
         // way to shed the reports against it.
-        if (info && (info.state === "warned" || info.state === "delisted")) {
+        if (info && info.state === "warned" && SiteRemoval.check(row.address).status === "allowed") {
           flagged.push(row);
-          if (info.state === "delisted") delisted_count++;
         }
       }
-      this.flagged_count = flagged.length;
-      this.delisted_count = delisted_count;
+      this.removals = SiteRemoval.records();
+      this.flagged_count = flagged.length + this.removals.length;
+      this.delisted_count = this.removals.length;
       this.flagged_list.sync(this.orderRows(flagged));
     }
 
@@ -396,11 +414,12 @@
           this.flagged_count
             ? _n(this.flagged_count, "{n} listing is reported or delisted.", "{n} listings are reported or delisted.") + " "
             : "",
-          _("Nothing is silently removed: every one stays auditable here, with its evidence.")
+          _("Removed entries show only a removal key, reason, and decision source. Reported entries retain their evidence.")
         ]),
+        this.removals.length ? h("div.removal-list", this.removals.map(SiteRemoval.render)) : null,
         this.flagged_list.items.length
           ? h("div.sites.sites-flat", this.flagged_list.items.map(function(item) { return item.render(); }))
-          : h("h2.empty", _("No flagged listings. Good."))
+          : (!this.removals.length ? h("h2.empty", _("No flagged listings.")) : null)
       ]);
     }
 
@@ -411,6 +430,11 @@
           ? h("div.sites.sites-flat", this.search_list.items.map(function(item) { return item.render(); }))
           : h("h2.empty", _("Nothing found. Try fewer or shorter words."))
       ]);
+    }
+
+    handlePolicyRetry() {
+      if (window.RemovalPolicy) RemovalPolicy.refresh().then(this.update, this.update);
+      return false;
     }
 
     render() {
@@ -463,6 +487,10 @@
 
       return h("div#SiteLists", {classes: {"state-siteadd": this.state === "siteadd"}},
         this.loaded ? this.renderToolbar() : null,
+        this.policy_unavailable ? h("div.removal-unavailable", {role: "status"}, [
+          SiteRemoval.message(null),
+          h("button", {type: "button", onclick: this.handlePolicyRetry}, _("Retry verification"))
+        ]) : null,
         this.site_add.render(),
         body,
         h("div.clear", " ")

@@ -33,21 +33,7 @@
  "edx": 1,
  "epixnet_version": "0.4.23",
  "favicon": "img/favicon.ico",
- "feeds": {
-  "listings": {
-   "clock_unit": "ms",
-   "files": "data/users/*/sites.json",
-   "kind": {"default": "site"},
-   "map": {
-    "author": "author",
-    "clock": "clock",
-    "id": "post_id",
-    "target": null
-   },
-   "record_format": "epix-orset-1",
-   "record_key": "post"
-  }
- },
+ "feeds": {},
  "files": {
   "LICENSE": {
    "b3": "e5d78c01bf8de96db29343a9f6771e6eaf18b2392057cea340d985e9e75fb264",
@@ -453,8 +439,8 @@
  "inner_path": "content.json",
  "modified": 1787800853,
  "order_policy": {
-  "first_paint": ["index.html","css/all.css","js/lib/maquette.js","js/lib/anime.min.js","js/lib/epixframe.js","js/utils/LogMixin.js","js/utils/Deferred.js","js/utils/Dollar.js","js/utils/Prototypes.js","js/utils/RateLimit.js","js/utils/Animation.js","js/utils/Time.js","js/utils/Translate.js","js/utils/Text.js","js/utils/Menu.js","js/utils/Tip.js","js/utils/ItemList.js","js/utils/Form.js","js/utils/Trust.js","js/utils/Claim.js","js/User.js","js/Head.js","js/Site.js","js/SiteAdd.js","js/ClaimForm.js","js/SiteList.js","js/SiteLists.js","js/EpixSites.js"],
-  "prefetch": ["img/logo.png","dbschema.json","img/favicon.ico","img/favicon.png"]
+  "first_paint": ["index.html","css/all.css","js/lib/maquette.js","js/lib/anime.min.js","js/lib/epixframe.js","js/utils/LogMixin.js","js/utils/Deferred.js","js/utils/Dollar.js","js/utils/Prototypes.js","js/utils/RateLimit.js","js/utils/Animation.js","js/utils/Time.js","js/utils/Translate.js","js/utils/Text.js","js/utils/Menu.js","js/utils/Tip.js","js/utils/ItemList.js","js/utils/Form.js","js/utils/Trust.js","js/utils/RemovalRegistry.js","js/utils/RemovalPolicy.js","js/utils/SiteRemoval.js","js/utils/Claim.js","js/User.js","js/Head.js","js/Site.js","js/SiteAdd.js","js/ClaimForm.js","js/SiteList.js","js/SiteLists.js","js/EpixSites.js"],
+  "prefetch": ["img/logo.png","dbschema.json","img/favicon.ico","img/favicon.png","removals.json"]
  },
  "postmessage_nonce_security": true,
  "settings": {
@@ -494,6 +480,20 @@
     "spam": 0
    },
    "warn_net": 2
+  },
+  "removals": {
+   "policyId": "epix-xite-removal-v1",
+   "snapshot": "removals.json",
+   "checkpoint": {
+    "treeFormat": "epix-removal-merkle-v1",
+    "policyId": "epix-xite-removal-v1",
+    "authority": "epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf",
+    "root": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sequence": 1,
+    "entryCount": 0,
+    "issuedAt": 1793218771,
+    "expiresAt": 0
+   }
   }
  },
  "signers_sign": "HAu2g7RYnBf/p+E7NpM2xfxaZY8paXvckRUX9ZEKNiyFBsXEZekGorm5vMtaJIK/Qm0RTD69U+Qa2sxgVAqkxrQ=",

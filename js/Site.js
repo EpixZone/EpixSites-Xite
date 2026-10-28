@@ -110,43 +110,34 @@
       return false;
     }
 
-    // Warned, delisted, and sandboxed listings open through an interstitial.
+    // Native hrefs can outlive the policy decision that rendered them. Open
+    // only through a fresh check, including after a warning confirmation.
     handleOpenClick(e) {
-      var info = this.getInfo();
-      var needs_confirm = info && (info.state === "warned" || info.state === "delisted" || info.sandbox);
-      if (!needs_confirm) return true;  // normal navigation
-
-      var reasons = [];
-      if (info.evidence.reports.length) {
-        var counts = {};
-        info.evidence.reports.forEach(function(r) {
-          counts[r.reason] = (counts[r.reason] || 0) + 1;
-        });
-        for (var reason in counts) {
-          reasons.push(Trust.reasonName(reason) + " (" + counts[reason] + ")");
-        }
-      }
-      var what;
-      if (info.state === "delisted") {
-        what = _("This xite is delisted by community reports: {reasons}.", {reasons: reasons.join(", ")});
-      } else if (info.state === "warned") {
-        what = _("This xite has open reports: {reasons}.", {reasons: reasons.join(", ")});
-      } else {
-        what = _("This xite was submitted by an unverified identity and has not been checked by the community yet.");
-      }
+      if (e && e.preventDefault) e.preventDefault();
       var address = this.row.address;
-      Page.cmd("wrapperConfirm", [what + " " + _("Open it anyway?"), _("Open")], function() {
-        var link = document.createElement("a");
-        link.href = "/" + address;
-        link.target = "_top";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      var open = () => SiteRemoval.guard(address, (decision) => {
+        if (decision.status !== "allowed" || !decision.canonicalAddress) {
+          SiteRemoval.notify(decision.status === "allowed" ? {status: "verification_unavailable"} : decision);
+          return;
+        }
+        Page.cmd("wrapperOpenWindow", ["/" + decision.canonicalAddress, "_top"]);
+      });
+      SiteRemoval.guard(address, (decision) => {
+        if (decision.status !== "allowed") { SiteRemoval.notify(decision); return; }
+        var info = this.getInfo();
+        if (info && info.state === "delisted") { SiteRemoval.notify({status: "verification_unavailable"}); return; }
+        if (!info || (info.state !== "warned" && !info.sandbox)) { open(); return; }
+        var what = info.state === "warned"
+          ? _("This Xite has open community reports.")
+          : _("This Xite was submitted by an unverified identity.");
+        Page.cmd("wrapperConfirm", [what + " " + _("Open it anyway?"), _("Open")], open);
       });
       return false;
     }
 
     handleActionsClick() {
+      var decision = SiteRemoval.check(this.row.address);
+      if (decision.status !== "allowed") { SiteRemoval.notify(decision); return false; }
       var uri = this.getUri();
       var my_report = Page.user.my_reports[uri];
       var my_vouch = Page.user.my_vouches[uri];
@@ -213,7 +204,10 @@
 
     handleClaimClick() {
       this.withCert(() => {
-        Page.setFormEdit(new ClaimForm(this));
+        SiteRemoval.guard(this.row.address, (decision) => {
+          if (decision.status !== "allowed") { SiteRemoval.notify(decision); return; }
+          Page.setFormEdit(new ClaimForm(this));
+        });
       });
       return false;
     }
@@ -248,6 +242,12 @@
     }
 
     saveRow(cb) {
+      var decision = SiteRemoval.check(this.row.address);
+      if (decision.status !== "allowed") {
+        SiteRemoval.notify(decision);
+        if (cb) cb({error: SiteRemoval.message(decision)});
+        return;
+      }
       // An edit is a new signed version of the same site record (same key ->
       // same post_id -> supersedes); it can never touch another submission.
       // Fields come from the form's own data copy, never from this.row: a
@@ -282,6 +282,8 @@
 
     handleEditClick() {
       if (!this.isMine()) return false;
+      var decision = SiteRemoval.check(this.row.address);
+      if (decision.status !== "allowed") { SiteRemoval.notify(decision); return false; }
       if (!this.form_edit) {
         this.form_edit = new Form();
         this.form_edit.addField("text", "address", _("Address"), {placeholder: _("e.g. epix1abc123..."), required: true, validate: this.form_edit.shouldBeZite});
@@ -293,6 +295,7 @@
         this.form_edit.addField("text", "tags", _("Tags"), {placeholder: _("up to 5, comma separated"), required: false});
       }
       if (!this.row.rating) this.row.rating = "g";
+      this.form_edit.removalTarget = this.row.address;
       this.form_edit.setData(Object.assign({}, this.row));
       this.form_edit.saveRow = this.saveRow;
       this.form_edit.deleteRow = this.deleteRow;
@@ -371,6 +374,10 @@
 
     render() {
       var info = this.getInfo();
+      var decision = SiteRemoval.check(this.row.address);
+      if (decision.status !== "allowed" || (info && info.state === "delisted")) {
+        return SiteRemoval.render(decision);
+      }
       var uri = this.getUri();
       var my_rating = Page.user.my_ratings[uri];
       var starred = Page.user.starred[uri];
@@ -386,7 +393,7 @@
       return h("div.site-card", {key: uri,
         classes: {mine: this.isMine(), starred: starred, blur: blur, "state-warned": state === "warned", "state-delisted": state === "delisted", "state-mislabeled": state === "mislabeled"}}, [
         h("div.site-head", [
-          h("a.site-title", {href: "/" + this.row.address, onclick: this.handleOpenClick, title: this.row.address}, this.row.title),
+          h("a.site-title", {href: "#Open", onclick: this.handleOpenClick, onauxclick: this.handleOpenClick, title: _("Open Xite")}, this.row.title),
           h("div.site-chips", {onclick: this.handleEvidenceClick}, this.renderChips(info))
         ]),
         h("div.site-description", this.row.description),

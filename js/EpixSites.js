@@ -58,7 +58,10 @@
       // this.form_edit. Calling projector.replace per open would leak a
       // projection (maquette never drops replaced ones).
       this.projector.replace($("#FormEdit"), () => {
-        return h("div#FormEdit", [this.form_edit ? this.form_edit.render() : null]);
+        var form = this.form_edit;
+        var decision = form && form.removalTarget ? SiteRemoval.check(form.removalTarget) : {status: "allowed"};
+        return h("div#FormEdit", [form && !form.hidden && decision.status !== "allowed"
+          ? SiteRemoval.render(decision) : (form ? form.render() : null)]);
       });
       this.loadLocalStorage();
 
@@ -283,6 +286,15 @@
 
     setSiteInfo(site_info) {
       this.site_info = site_info;
+      if (window.RemovalPolicy) {
+        RemovalPolicy.configure(site_info).then(() => {
+          this.site_lists.update();
+          this.projector.scheduleRender();
+        }, () => {
+          this.site_lists.update();
+          this.projector.scheduleRender();
+        });
+      }
       this.on_site_info.resolve();
       this.updateSyncState(site_info);
       this.site_lists.onSiteInfo(site_info);

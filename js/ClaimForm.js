@@ -10,6 +10,7 @@
       this.site = site;
       this.row = site.row;
       this.address = ("" + this.row.address).toLowerCase();
+      this.removalTarget = this.address;
       this.hidden = false;
       this.checking = false;
       this.error = null;
@@ -52,6 +53,8 @@
     }
 
     handleCopy(e) {
+      var decision = SiteRemoval.check(this.address);
+      if (decision.status !== "allowed") { SiteRemoval.notify(decision); return false; }
       var what = e.currentTarget.attributes["data-copy"].value;
       var text = what === "challenge"
         ? Claim.challenge(this.address, Page.user.getUserDirectory())
@@ -110,6 +113,8 @@
     }
 
     handleSubmit() {
+      var decision = SiteRemoval.check(this.address);
+      if (decision.status !== "allowed") { this.error = SiteRemoval.message(decision); Page.projector.scheduleRender(); return false; }
       if (this.checking) return false;
       if (!Page.site_info.cert_user_id) {
         Page.user.certSelect(() => { this.handleSubmit(); });
@@ -223,6 +228,8 @@
     }
 
     render() {
+      var decision = SiteRemoval.check(this.address);
+      if (decision.status !== "allowed") return SiteRemoval.render(decision);
       var mine = this.isMine();
       return h("div.form-takeover-container", {key: this, afterCreate: Animation.show, classes: {hidden: this.hidden}}, [
         h("div.form.form-takeover.form-claim", {afterCreate: Animation.slideDown, exitAnimation: Animation.slideUp}, [
