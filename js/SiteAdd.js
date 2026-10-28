@@ -115,6 +115,11 @@
     shouldBeUniqueSite(value) {
       var address = this.parseAddress(value);
       if (!address) return null;
+      var decision = SiteRemoval.check(address);
+      // An unresolved alias gets a fresh verified lookup at the write gate.
+      // It is never accepted for signing until that asynchronous check passes.
+      if (decision.status === "removed") return SiteRemoval.message(decision);
+      if (decision.status !== "allowed") return null;
       // The owner proved control of this xite's key and withdrew it. Say so,
       // rather than accepting a submission that would be hidden on arrival.
       var claim = Page.site_lists.claims[address.toLowerCase()];

@@ -184,12 +184,26 @@
     // union-merges the record into the on-disk set (never overwriting other
     // records) and signs+bumps content.json, which propagates to peers.
     saveRecord(collection, record, cb) {
+      var target = SiteRemoval.target(collection, record);
+      var decision = target !== null ? SiteRemoval.check(target) : {status: "allowed"};
+      if (decision.status !== "allowed") {
+        SiteRemoval.notify(decision);
+        if (cb) cb({error: SiteRemoval.message(decision)});
+        return;
+      }
       var container = {"record_format": "epix-orset-1", "post": [record]};
       Page.cmd("fileWrite", [this.getPath() + "/" + collection + ".json", Text.fileEncode(container)], (res_write) => {
+        if (res_write !== "ok") { if (cb) cb(res_write); return; }
         this.ensureCollections(() => {
+          var current = target !== null ? SiteRemoval.check(target) : {status: "allowed"};
+          if (current.status !== "allowed") {
+            SiteRemoval.notify(current);
+            if (cb) cb({error: SiteRemoval.message(current)});
+            return;
+          }
           Page.cmd("sitePublish", {"inner_path": this.getPath() + "/content.json"}, (res_pub) => {
             this.log("saveRecord", collection, res_write, res_pub);
-            if (typeof cb === "function") cb(res_write);
+            if (typeof cb === "function") cb(res_pub === "ok" ? "ok" : (res_pub || {error: _("Publication did not complete.")}));
           });
         });
       });
@@ -203,7 +217,8 @@
     // so an edit or re-toggle SUPERSEDES the prior record instead of adding one.
     editRecord(collection, key, fields, deleted, cb) {
       if (cb == null) cb = null;
-      this.getRecords(collection, (container) => {
+      var target = SiteRemoval.target(collection, Object.assign({}, fields, {deleted: deleted === true}));
+      var proceed = () => this.getRecords(collection, (container) => {
         var maxClock = 0, orig = null;
         container.post.forEach((r) => {
           if (r.key === key) {
@@ -224,6 +239,12 @@
             if (fields[k] !== undefined) record[k] = fields[k];
           }
         }
+        var decision = target !== null ? SiteRemoval.check(target) : {status: "allowed"};
+        if (decision.status !== "allowed") {
+          SiteRemoval.notify(decision);
+          if (cb) cb({error: SiteRemoval.message(decision)});
+          return;
+        }
         Page.cmd("recordSign", [record], (signed) => {
           if (!signed || signed.error) {
             if (cb) cb(signed);
@@ -233,6 +254,19 @@
             if (cb) cb(res);
           });
         });
+      });
+      if (target === null) return proceed();
+      SiteRemoval.guard(target, function(decision) {
+        if (decision.status === "allowed") {
+          if (decision.canonicalAddress && (collection === "sites" || collection === "claims")) {
+            target = decision.canonicalAddress;
+            fields = Object.assign({}, fields);
+            fields[collection === "sites" ? "address" : "target_address"] = target;
+          }
+          return proceed();
+        }
+        SiteRemoval.notify(decision);
+        if (cb) cb({error: SiteRemoval.message(decision)});
       });
     }
 
