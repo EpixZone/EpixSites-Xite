@@ -374,3 +374,20 @@ test('retry without a configuration asks for a fresh site info', () => {
   assert.equal(h.calls.at(-1).command, 'siteInfo');
   assert.equal(info, 'ok');
 });
+
+test('the New tab lists only what was published in the last 30 days', () => {
+  const h = harness();
+  const NOW = 10000000, DAY = 86400;
+  h.context.Time.timestamp = () => NOW;
+  const list = {item_list: new h.context.ItemList(h.context.Site)};
+  h.lists.site_lists_db = {1: list};
+  h.apply([row(A, 1, {date_added: NOW - DAY}), row(B, 2, {date_added: NOW - 31 * DAY}),
+    row(C, 3, {date_added: NOW + 10 * DAY})]);
+  const listed = () => Array.from(list.item_list.items, site => site.row.site_id);
+  h.context.Page.head.active = 'new';
+  h.lists.distribute();
+  assert.deepEqual(listed(), [1], 'older than a month and future-dated listings are not new');
+  h.context.Page.head.active = 'popular';
+  h.lists.distribute();
+  assert.deepEqual(listed().sort(), [1, 2, 3]);
+});

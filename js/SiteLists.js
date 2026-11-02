@@ -1,5 +1,8 @@
 (function() {
 
+  // How long a listing stays on the New tab after it is published.
+  var NEW_WINDOW = 30 * 24 * 60 * 60;
+
   class SiteLists {
     constructor() {
       this.menu_filters = new Menu();
@@ -206,11 +209,15 @@
     distribute() {
       var i, row;
 
-      // Category browse lists
+      // Category browse lists. New lists only what was published within the
+      // window, not the whole directory re-sorted. date_sort is 0 for a date
+      // beyond clock skew, so a forged future date never counts as new.
+      var new_since = Page.head.active === "new" ? Time.timestamp() - NEW_WINDOW : null;
       var by_category = {};
       for (i = 0; i < this.rows.length; i++) {
         row = this.rows[i];
         if (!this.isBrowsable(row) || !this.passesLangFilter(row)) continue;
+        if (new_since !== null && !(row.date_sort >= new_since)) continue;
         if (!by_category[row.category]) by_category[row.category] = [];
         by_category[row.category].push(row);
       }
@@ -479,7 +486,12 @@
             break;
           }
         }
-        if (!any) {
+        if (!any && Page.head.active === "new" && this.num_total !== 0) {
+          body = h("div.empty-state", [
+            h("div.empty-state-title", _("Nothing new this month")),
+            h("div.empty-state-text", _("Xites published in the last 30 days show here. Popular lists the whole directory."))
+          ]);
+        } else if (!any) {
           body = h("div.empty-state", [
             h("div.empty-state-title", this.num_total === 0 ? _("The directory is empty") : _("Nothing matches your filters")),
             h("div.empty-state-text", this.num_total === 0
