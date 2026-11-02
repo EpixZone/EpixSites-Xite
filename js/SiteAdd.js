@@ -31,9 +31,7 @@
     }
 
     parseAddress(value) {
-      var match = (value || "").match(/(epix1[a-z0-9]{38,}|[A-Za-z0-9\.-]{2,99}\.[a-z]+)(.*)/);
-      if (!match) return null;
-      return match[1];  // the address group only, never the trailing rest
+      return SiteRemoval.clean(value);  // the xite only, never the trailing rest
     }
 
     normalizeTags(value) {

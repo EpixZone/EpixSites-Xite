@@ -88,7 +88,7 @@
     }
 
     shouldBeZite(value) {
-      if (!value.match(/(epix1[a-z0-9]{38,}|[A-Za-z0-9\.-]{2,99}\.[a-z]+)/)) {
+      if (!SiteRemoval.clean(value)) {
         return _("Invalid site address: only EpixNet addresses supported");
       }
     }

@@ -9,14 +9,16 @@ const root = path.join(__dirname, '..');
 const A = 'epix1jaahfehr280m9uqlf44vtkrz9hjkvq8fewz68v';
 const B = 'epix1p0stmcza0xjkvv0vnjlk0ypr7xsunt4lxkhgcm';
 const C = 'epix1searchd8hcnyfacvklmszzxwx9ptnf5rde04xf';
+const PolicyClient = require('../js/utils/RemovalPolicy.js');
 const key = address => crypto.createHash('sha256').update(String(address)).digest('hex');
 
 function harness() {
   const calls = [];
   const decisions = new Map();
   const policy = {
-    state: 'allowed', entries: [],
+    state: 'allowed', entries: [], config: {},
     key, records() { return this.entries; },
+    extract: address => new PolicyClient(() => null).extract(address),
     check(address) { return !address ? {status: 'verification_unavailable'} : decisions.get(address) || {status: this.state}; },
     guard(address, cb) { cb({...this.check(address), canonicalAddress: address}); },
     ready() { return Promise.resolve(); },
@@ -342,4 +344,33 @@ test('startup waits for wrapper preferences before accepting the checkpoint with
   assert.equal(c.Page.site_lists.loaded, true);
   assert.equal(c.Page.site_lists.policy_unavailable, false);
   assert.equal(c.Page.local_storage.custom_preference, 42);
+});
+
+test('listings stored with a trailing slash or query show as the xite they name', () => {
+  const h = harness();
+  h.apply([row(A + '/', 1), row(B + '/?', 2)]);
+  assert.deepEqual(Array.from(h.lists.rows, r => r.address).sort(), [A, B].sort());
+  assert.equal(h.lists.policy_unavailable, false);
+  const add = new h.context.SiteAdd();
+  assert.equal(add.parseAddress('http://127.0.0.1:42222/' + A + '/?x'), A);
+  assert.equal(add.parseAddress('not an address'), null);
+});
+
+test('a listing that cannot be checked is hidden without the directory-wide banner', () => {
+  const h = harness();
+  h.decisions.set('unresolved.epix', {status: 'verification_unavailable', error: 'unresolved_address'});
+  h.apply([row('unresolved.epix', 1), row(B, 2)]);
+  assert.deepEqual(Array.from(h.lists.rows, r => r.address), [B]);
+  assert.equal(h.lists.policy_unavailable, false);
+});
+
+test('retry without a configuration asks for a fresh site info', () => {
+  const h = harness();
+  const lists = new h.context.SiteLists();
+  h.policy.config = null;
+  let info = null;
+  h.context.Page.setSiteInfo = value => { info = value; };
+  assert.equal(lists.handlePolicyRetry(), false);
+  assert.equal(h.calls.at(-1).command, 'siteInfo');
+  assert.equal(info, 'ok');
 });

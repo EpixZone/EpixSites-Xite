@@ -132,6 +132,9 @@
       for (var i = 0; i < raw.length; i++) {
         var row = raw[i];
         row.uri = row.directory + "_" + row.site_id;
+        // Older listings and edits stored the address as typed ("epix1.../",
+        // "epix1.../?"). Check, claim and open them as the xite they name.
+        row.address = SiteRemoval.clean(row.address) || row.address;
         if (seen_uri[row.uri]) continue;
         seen_uri[row.uri] = true;
         // The owner's description wins over the submitter's, but the listing
@@ -148,9 +151,11 @@
       SiteRemoval.remember(rows, trust);
       this.trust = {};
       this.policy_unavailable = SiteRemoval.check(Page.site_info && Page.site_info.address).status === "verification_unavailable";
+      // The banner is about the policy itself. A listing that cannot be
+      // checked (a name not resolved yet, a malformed address) stays hidden
+      // without claiming the whole directory is unverified.
       this.rows = rows.filter((row) => {
         var decision = SiteRemoval.check(row.address);
-        if (decision.status === "verification_unavailable") this.policy_unavailable = true;
         if (decision.status !== "allowed" || trust[row.uri].state === "delisted") return false;
         this.trust[row.uri] = trust[row.uri];
         return true;
@@ -433,6 +438,12 @@
     }
 
     handlePolicyRetry() {
+      // Without a configuration there is nothing to refresh: only a fresh
+      // site info can bring it back (setSiteInfo configures, then updates).
+      if (window.RemovalPolicy && !RemovalPolicy.config) {
+        Page.cmd("siteInfo", {}, (site_info) => Page.setSiteInfo(site_info));
+        return false;
+      }
       if (window.RemovalPolicy) RemovalPolicy.refresh().then(this.update, this.update);
       return false;
     }

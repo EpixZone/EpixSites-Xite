@@ -10,6 +10,13 @@
   };
   var community = Object.create(null);
 
+  // The xite an entered or stored address points at, without the trailing
+  // slash, query or path people paste along with it. Null when there is none.
+  function clean(address) {
+    try { return window.RemovalPolicy ? RemovalPolicy.extract(address) : null; }
+    catch (_) { return null; }
+  }
+
   function key(address) {
     try { return window.RemovalPolicy ? RemovalPolicy.key(address) : null; }
     catch (_) { return null; }
@@ -116,6 +123,6 @@
     ]);
   }
 
-  window.SiteRemoval = {key: key, check: check, guard: guard, message: message,
+  window.SiteRemoval = {clean: clean, key: key, check: check, guard: guard, message: message,
     notify: notify, remember: remember, records: records, render: render, target: target};
 })();
