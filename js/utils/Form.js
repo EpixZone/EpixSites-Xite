@@ -177,6 +177,11 @@
       props.classes = Object.assign({}, field.props.classes);
       props.value = this.data[field.id];
       props.name = field.id;
+      // The radio links below are built before this.h() defaults the id, and
+      // their click handler reads the field from their `for` attribute. With
+      // fresh props per render that default never reached them, so every
+      // radio in an edit form threw on click and the edit kept the old value.
+      if (props.id == null) props.id = field.id;
       var values = props.values;
       if (field.type === "radio") {
         return h("div.formfield",
