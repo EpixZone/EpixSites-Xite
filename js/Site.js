@@ -262,7 +262,7 @@
         "language": data.language,
         "title": data.title,
         "description": data.description,
-        "address": data.address,
+        "address": SiteRemoval.clean(data.address),
         "tags": data.tags,
         "rating": data.rating
       }, false, (res) => {

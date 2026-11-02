@@ -206,3 +206,42 @@ test("storage availability and write errors fail closed without erasing known re
   assert.equal(delayed.client.check(OTHER).status, "allowed");
   assert.equal(delayed.page.local_storage.theme, "light");
 });
+
+test("pasted addresses are checked as the xite they name, never as a different one", async () => {
+  const data = snapshot(), {client} = setup(data, {resolveStatus(params, cb) {
+    cb({host: params.host, address: OTHER, verified: true, state: "resolved"});
+  }});
+  await client.configure(info(data));
+  for (const typed of [TARGET + "/", TARGET + "/?", " " + TARGET + "/index.html#top ", TARGET.toUpperCase() + "/",
+    "http://127.0.0.1:42222/" + TARGET + "/", "https://localhost:43110/" + TARGET + "?wrapper=False"]) {
+    assert.equal(client.extract(typed), TARGET, typed);
+    assert.equal(client.check(typed).status, "removed", typed);
+    assert.equal(client.key(typed), client.key(TARGET), typed);
+  }
+  assert.equal(client.extract("Example.EPIX/"), "example.epix");
+  assert.equal(client.extract("http://127.0.0.1:42222/example.epix/?x"), "example.epix");
+  assert.equal(client.extract("example.epix/" + TARGET), TARGET, "a canonical address wins over a name");
+  const opened = await client.guard("example.epix/");
+  assert.equal(opened.status, "allowed");
+  assert.equal(opened.canonicalAddress, OTHER);
+  for (const junk of ["", "/", "?", "http://127.0.0.1:42222/", "epix1notanaddress/", null, "x".repeat(4000)]) {
+    assert.equal(client.extract(junk), null, String(junk).slice(0, 40));
+    assert.equal(client.check(junk).status, "verification_unavailable");
+  }
+});
+
+test("a site info event with an empty content keeps the loaded policy", async () => {
+  const data = snapshot(), {client} = setup(data);
+  await client.configure(info(data));
+  assert.equal(client.check(TARGET).status, "removed");
+  for (const partial of [{content: {}}, {}, {content: null}, {content: {title: "Sites"}}]) {
+    await client.configure(partial);
+    assert.equal(client.error, null);
+    assert.equal(client.check(TARGET).status, "removed");
+    assert.equal(client.check(OTHER).status, "allowed");
+  }
+  // A real content that no longer carries a valid policy still fails closed.
+  await client.configure({content: {address: AUTHORITY, settings: {}}});
+  assert.equal(client.error, "invalid_policy");
+  assert.equal(client.check(OTHER).status, "verification_unavailable");
+});

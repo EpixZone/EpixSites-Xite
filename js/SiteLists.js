@@ -1,5 +1,8 @@
 (function() {
 
+  // How long a listing stays on the New tab after it is published.
+  var NEW_WINDOW = 30 * 24 * 60 * 60;
+
   class SiteLists {
     constructor() {
       this.menu_filters = new Menu();
@@ -132,6 +135,9 @@
       for (var i = 0; i < raw.length; i++) {
         var row = raw[i];
         row.uri = row.directory + "_" + row.site_id;
+        // Older listings and edits stored the address as typed ("epix1.../",
+        // "epix1.../?"). Check, claim and open them as the xite they name.
+        row.address = SiteRemoval.clean(row.address) || row.address;
         if (seen_uri[row.uri]) continue;
         seen_uri[row.uri] = true;
         // The owner's description wins over the submitter's, but the listing
@@ -148,9 +154,11 @@
       SiteRemoval.remember(rows, trust);
       this.trust = {};
       this.policy_unavailable = SiteRemoval.check(Page.site_info && Page.site_info.address).status === "verification_unavailable";
+      // The banner is about the policy itself. A listing that cannot be
+      // checked (a name not resolved yet, a malformed address) stays hidden
+      // without claiming the whole directory is unverified.
       this.rows = rows.filter((row) => {
         var decision = SiteRemoval.check(row.address);
-        if (decision.status === "verification_unavailable") this.policy_unavailable = true;
         if (decision.status !== "allowed" || trust[row.uri].state === "delisted") return false;
         this.trust[row.uri] = trust[row.uri];
         return true;
@@ -201,11 +209,15 @@
     distribute() {
       var i, row;
 
-      // Category browse lists
+      // Category browse lists. New lists only what was published within the
+      // window, not the whole directory re-sorted. date_sort is 0 for a date
+      // beyond clock skew, so a forged future date never counts as new.
+      var new_since = Page.head.active === "new" ? Time.timestamp() - NEW_WINDOW : null;
       var by_category = {};
       for (i = 0; i < this.rows.length; i++) {
         row = this.rows[i];
         if (!this.isBrowsable(row) || !this.passesLangFilter(row)) continue;
+        if (new_since !== null && !(row.date_sort >= new_since)) continue;
         if (!by_category[row.category]) by_category[row.category] = [];
         by_category[row.category].push(row);
       }
@@ -433,6 +445,12 @@
     }
 
     handlePolicyRetry() {
+      // Without a configuration there is nothing to refresh: only a fresh
+      // site info can bring it back (setSiteInfo configures, then updates).
+      if (window.RemovalPolicy && !RemovalPolicy.config) {
+        Page.cmd("siteInfo", {}, (site_info) => Page.setSiteInfo(site_info));
+        return false;
+      }
       if (window.RemovalPolicy) RemovalPolicy.refresh().then(this.update, this.update);
       return false;
     }
@@ -468,7 +486,12 @@
             break;
           }
         }
-        if (!any) {
+        if (!any && Page.head.active === "new" && this.num_total !== 0) {
+          body = h("div.empty-state", [
+            h("div.empty-state-title", _("Nothing new this month")),
+            h("div.empty-state-text", _("Xites published in the last 30 days show here. Popular lists the whole directory."))
+          ]);
+        } else if (!any) {
           body = h("div.empty-state", [
             h("div.empty-state-title", this.num_total === 0 ? _("The directory is empty") : _("Nothing matches your filters")),
             h("div.empty-state-text", this.num_total === 0

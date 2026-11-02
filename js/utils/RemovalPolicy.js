@@ -17,6 +17,22 @@
     value = value.trim().toLowerCase();
     return value.length <= 253 && /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$/.test(value) ? value : null;
   };
+  // People paste what their address bar shows: a trailing slash or query, a
+  // path inside the xite, or the whole local URL. The xite is the first path
+  // segment that is a canonical address, else the first that is a name.
+  // Every decision is made on this result and opening uses the same canonical
+  // address, so the leniency cannot open anything other than what was checked.
+  var extract = function(value) {
+    if (typeof value !== "string" || value.length > 2048) return null;
+    var segments = value.trim().replace(/^[a-z][a-z0-9+.-]*:\/\//i, "").split(/[/?#]/);
+    var name = null;
+    for (var i = 0; i < segments.length; i++) {
+      var address = Registry.normalizeAddress(segments[i]);
+      if (address) return address;
+      if (!name) name = hostName(segments[i]);
+    }
+    return name;
+  };
 
   // The checkpoint is an author-controlled part of the node-verified root
   // content.json. Neither a user record nor removals.json may supply trust.
@@ -77,8 +93,13 @@
 
     configure(siteInfo) {
       var next;
+      var content = siteInfo && siteInfo.content;
+      // Sync progress events can carry an empty content when the node had no
+      // summary to hand. That says nothing about the policy: keep the last
+      // root-pinned configuration instead of dropping it until the next full
+      // site info. A real content always names its address.
+      if (this.config && (!plain(content) || content.address === undefined)) return this.pending;
       try {
-        var content = siteInfo && siteInfo.content;
         var config = content && content.settings && content.settings.removals;
         var authority = content && Registry.normalizeAddress(content.address);
         if (!authority || !/^epix1/.test(authority) || !plain(config) ||
@@ -171,17 +192,20 @@
       return this.pending;
     }
 
+    extract(address) { return extract(address); }
+
     canonical(address) {
-      var canonical = Registry.normalizeAddress(address);
+      var value = extract(address);
+      var canonical = Registry.normalizeAddress(value);
       if (canonical) return canonical;
-      var host = hostName(address), cached = host && this.aliases.get(host);
+      var cached = value && this.aliases.get(value);
       return cached && cached.until > this.now() ? cached.address : null;
     }
 
     async resolve(address, force) {
-      var canonical = Registry.normalizeAddress(address);
+      var host = extract(address);
+      var canonical = Registry.normalizeAddress(host);
       if (canonical) return canonical;
-      var host = hostName(address);
       if (!host) return null;
       var cached = this.aliases.get(host);
       if (!force && cached && cached.until > this.now()) return cached.address;
@@ -207,8 +231,8 @@
     async prepare(addresses) {
       await this.ready();
       if (!Array.isArray(addresses)) return;
-      var queue = Array.from(new Set(addresses.filter(function(address) {
-        return !Registry.normalizeAddress(address) && !!hostName(address);
+      var queue = Array.from(new Set(addresses.map(extract).filter(function(value) {
+        return !!value && !Registry.normalizeAddress(value);
       }))).slice(0, 64);
       var next = 0;
       await Promise.all([0, 1, 2, 3].map(async () => {
